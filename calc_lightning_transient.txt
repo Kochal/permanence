@@ -1,0 +1,9 @@
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+LAND=$(ls /home/akoch/terraces/datasets/CMIP6/land_mask/sftlf_fx_${MOD}*_rotated.nc)
+python /home/akoch/LPJ/climategenerator/tools/magi_lightning.py  ${TARGET}/control/${SSP}/${MOD}/rawdata/mc_lvl_Amon_${MOD}_185001-210012.nc $LAND ${TARGET}/control/${SSP}/${MOD}/rawdata/lightning_Amon_${MOD}_185001-210012.nc;
+echo ${TARGET}/control/${SSP}/${MOD}/rawdata/${VAR}_Amon_${MOD}_185001-210012.nc;
+done
+done

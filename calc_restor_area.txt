@@ -1,0 +1,6 @@
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+cdo -L -divc,1e11 -mul -mul -sub -selyear,2040,2090,2100 -selvar,lu_past /home/terraces/datasets/dgvm_input/landuse/luhv2_states_${SSP}_1850-2100_30min.nc -selyear,2040,2090,2100 -selvar,lu_past /home/terraces/datasets/dgvm_input/landuse/luhv2_states_${SSP}_1850-2100_30min_restor.nc -gridarea /home/terraces/projects/LPJ_futuretropics/afforestation_mask_tropics.nc /home/terraces/projects/LPJ_futuretropics/afforestation_mask_tropics.nc /home/terraces/projects/LPJ_futuretropics/restor_area_${SSP}.nc
+done
+
+# calc_restor_area.R

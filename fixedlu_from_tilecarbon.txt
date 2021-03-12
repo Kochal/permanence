@@ -1,0 +1,67 @@
+MASK=/home/terraces/projects/LPJ_futuretropics/afforestation_mask_tropics.nc
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for MOD in BCC-CSM2-MR;  # IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+for VAR in restor_fixco2_1850_fire restor_fixco2_2014_fire restor_fire ctl_fire;
+do
+cdo -L  -selyear,1850/2100 -sellevel,3 -selvar,tilecarbon /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc t3carbon.nc
+cdo -L  -selyear,2021 -sellevel,3 -selvar,coverfrac /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc t3cover.nc
+cdo -L fldsum -mul -mul -mul t3cover.nc t3carbon.nc -gridarea $MASK $MASK carbon_fixlu_${MOD}_${SSP}_${VAR}_ts.nc
+#cdo -selyear,2021 carbon_fixlu_${MOD}_${SSP}_${VAR}_ts.nc year.nc
+#cdo sub carbon_fixlu_${MOD}_${SSP}_${VAR}_ts.nc year.nc tmp.nc
+mv tmp.nc carbon_fixlu_${MOD}_${SSP}_${VAR}_ts.nc
+done
+done
+done
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for VAR in restor_fixco2_1850_fire restor_fixco2_2014_fire restor_fire ctl_fire;
+do
+VARS=$(ls /home/terraces/projects/LPJ_futuretropics/totc_restor/carbon_fixlu_*_${SSP}_${VAR}_ts.nc);
+cdo ensmean $VARS carbon_fixlu_${VAR}_${SSP}_ensmean.nc;
+ncrename -v tilecarbon,mean carbon_fixlu_${VAR}_${SSP}_ensmean.nc;
+cdo ensstd $VARS carbon_fixlu_${VAR}_${SSP}_ensstd.nc;
+ncrename -v tilecarbon,std carbon_fixlu_${VAR}_${SSP}_ensstd.nc;
+ncks -A -v std carbon_fixlu_${VAR}_${SSP}_ensstd.nc carbon_fixlu_${VAR}_${SSP}_ensmean.nc;
+ncatted -O -a title,global,m,c,"Anomalies w.r.t. 1970" carbon_fixlu_${VAR}_${SSP}_ensmean.nc;
+
+ncap2 -A -s 'conf1=mean-(1.96*(std / sqrt(13)))' carbon_fixlu_${VAR}_${SSP}_ensmean.nc carbon_fixlu_${VAR}_${SSP}_ensmean.nc;
+ncap2 -A -s 'conf2=mean+(1.96*(std / sqrt(13)))' carbon_fixlu_${VAR}_${SSP}_ensmean.nc carbon_fixlu_${VAR}_${SSP}_ensmean.nc;
+done;
+done
+
+## 1850 ################################################################
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for MOD in BCC-CSM2-MR;  # IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+for VAR in restor_fixco2_1850_fire restor_fixco2_2014_fire restor_fire ctl_fire;
+do
+cdo -L  -selyear,2021/2100 -sellevel,3 -selvar,tilecarbon /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc t3carbon.nc
+cdo -L  -selyear,2019 -sellevel,3 -selvar,coverfrac /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc t3cover.nc
+cdo -L fldsum -mul -mul -mul t3cover.nc t3carbon.nc -gridarea $MASK $MASK carbon_fixlu_${MOD}_${SSP}_${VAR}_ts.nc
+cdo -selyear,2021 carbon_fixlu_${MOD}_${SSP}_${VAR}_ts.nc year.nc
+cdo sub carbon_fixlu_${MOD}_${SSP}_${VAR}_ts.nc year.nc tmp.nc
+mv tmp.nc carbon_fixlu_${MOD}_${SSP}_${VAR}_ts.nc
+done
+done
+done
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for VAR in restor_fixco2_1850_fire restor_fixco2_2014_fire restor_fire ctl_fire;
+do
+VARS=$(ls /home/terraces/projects/LPJ_futuretropics/totc_restor/carbon_fixlu_*_${SSP}_${VAR}_ts.nc);
+cdo ensmean $VARS carbon_fixlu1850_${VAR}_${SSP}_ensmean.nc;
+ncrename -v tilecarbon,mean carbon_fixlu1850_${VAR}_${SSP}_ensmean.nc;
+cdo ensstd $VARS carbon_fixlu1850_${VAR}_${SSP}_ensstd.nc;
+ncrename -v tilecarbon,std carbon_fixlu1850_${VAR}_${SSP}_ensstd.nc;
+ncks -A -v std carbon_fixlu1850_${VAR}_${SSP}_ensstd.nc carbon_fixlu1850_${VAR}_${SSP}_ensmean.nc;
+ncatted -O -a title,global,m,c,"Anomalies w.r.t. 1970" carbon_fixlu1850_${VAR}_${SSP}_ensmean.nc;
+
+ncap2 -A -s 'conf1=mean-(1.96*(std / sqrt(13)))' carbon_fixlu1850_${VAR}_${SSP}_ensmean.nc carbon_fixlu1850_${VAR}_${SSP}_ensmean.nc;
+ncap2 -A -s 'conf2=mean+(1.96*(std / sqrt(13)))' carbon_fixlu1850_${VAR}_${SSP}_ensmean.nc carbon_fixlu1850_${VAR}_${SSP}_ensmean.nc;
+done;
+done

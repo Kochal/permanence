@@ -1,0 +1,39 @@
+RUN=_no_lght
+SSP=ssp370
+
+#####################################################################################
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR;
+do
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}.nc pftpars_global.csv;
+
+done
+
+####################################################################################
+
+for MOD in MRI-ESM2-0 FGOALS-g3 MIROC6;
+do
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}.nc pftpars_global.csv;
+
+done
+
+####################################################################################
+
+for MOD in ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR;
+do
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}.nc pftpars_global.csv;
+
+done
+
+####################################################################################
+
+for MOD in EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5;
+do
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}.nc pftpars_global.csv;
+
+done
+

@@ -1,0 +1,22 @@
+VAR=albiomass
+MOD=BCC-CSM2-MR
+
+for SSP in ssp126 ssp585;
+do
+cdo -L fldsum -mul -selname,${VAR} /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl.nc -gridarea /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl.nc ${VAR}_${MOD}_${SSP}_30min_global_ctl_sum.nc;
+
+cdo -L fldsum -mul -selname,${VAR} /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl_fixlu.nc -gridarea /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl_fixlu.nc ${VAR}_${MOD}_${SSP}_30min_global_ctl_fixlu_sum.nc;
+
+cdo -L fldsum -mul -selname,${VAR} /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl_fixco2.nc -gridarea /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl_fixco2.nc ${VAR}_${MOD}_${SSP}_30min_global_ctl_fixco2_sum.nc;
+
+cdo sub ${VAR}_${MOD}_${SSP}_30min_global_ctl_fixlu_sum.nc ${VAR}_${MOD}_${SSP}_30min_global_ctl_fixco2_sum.nc diff_${VAR}_${MOD}_${SSP}_30min_global_ctl_climate_sum.nc;
+
+cdo sub ${VAR}_${MOD}_${SSP}_30min_global_ctl_fixlu_sum.nc ${VAR}_${MOD}_${SSP}_30min_global_ctl_sum.nc diff_${VAR}_${MOD}_${SSP}_30min_global_ctl_fixlu_sum.nc;
+
+cdo sub ${VAR}_${MOD}_${SSP}_30min_global_ctl_fixco2_sum.nc ${VAR}_${MOD}_${SSP}_30min_global_ctl_sum.nc diff_${VAR}_${MOD}_${SSP}_30min_global_ctl_fixco2_sum.nc;
+
+done
+
+## TROPICS ONLY
+
+cdo -L fldsum -mul ~/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc -mul -selname,albiomass /home/terraces/datasets/dgvm_output/AWI-CM-1-1-MR_${SSP}_30min_global_ctl.nc -gridarea /home/terraces/datasets/dgvm_output/AWI-CM-1-1-MR_${SSP}_30min_global_ctl.nc AWI-CM-1-1-MR_${SSP}_globsum.nc

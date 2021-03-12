@@ -1,0 +1,85 @@
+## carbon gains from restoration per country with fire suppression
+## carbon losses in that restoration area due to fire 
+
+
+cd /home/terraces/projects/LPJ_futuretropics/restorgains/
+
+#cdo -L -mul -mul /home/terraces/datasets/vegetation/afforestation_frac_30min.nc /home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc -gridarea /home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc /home/terraces/projects/LPJ_futuretropics/afforestation_area_tropics.nc
+
+#cdo expr,'Band1=Band1>0.' /home/terraces/projects/LPJ_futuretropics/afforestation_area_tropics.nc /home/terraces/projects/LPJ_futuretropics/afforestation_mask_tropics.nc
+
+MASK=/home/terraces/projects/LPJ_futuretropics/afforestation_mask_tropics.nc
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+for VAR in ctl ctl_fire ctl_fixco2_fire;
+do
+# decadal means for 1970s
+cdo -L timmean -mul -expr,'totalcarbon=livebiomass+litterC_fast+litterC_slow+litterC_bg+soilC_surf+soilC_fast+soilC_slow;' -selyear,1970/1979 /home/terraces/datasets/dgvm_output/${MOD}_ssp585_30min_global_${VAR}.nc $MASK totc_${MOD}_${VAR}_1970.nc;
+cdo -L timmean -mul -selyear,1970/1979 -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_ssp585_30min_global_${VAR}.nc $MASK agb_${MOD}_${VAR}_1970.nc;
+
+cdo -L timmean -mul -selyear,1970/1979 -selvar,burnedf /home/terraces/datasets/dgvm_output/${MOD}_ssp585_30min_global_${VAR}.nc $MASK burnedf_${MOD}_${VAR}_1970.nc;
+done
+done
+
+for VAR in ctl ctl_fire ctl_fixco2_fire ctl_fixco2_2014_fire ctl_fixco2_1850_fire;
+do
+cdo merge totc_*_${VAR}_1970.nc  totc_${VAR}_1970_ens.nc
+cdo merge agb_*_${VAR}_1970.nc agb_${VAR}_1970_ens.nc
+cdo merge burnedf_*_${VAR}_1970.nc burnedf_${VAR}_1970_ens.nc
+
+rm totc_*_${VAR}_1970.nc
+rm agb_*_${VAR}_1970.nc
+rm burnedf_*_${VAR}_1970.nc
+done
+
+#########################################################################
+### FUTURE
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+for VAR in ctl ctl_fire ctl_fixco2_fire ctl_fixco2_2014_fire restor restor_fire restor_cl_fire restor_fixco2_1850_fire restor_fixco2_2014_fire;
+do
+# decadal means for 2020s
+cdo -L timmean -mul -expr,'totalcarbon=livebiomass+litterC_fast+litterC_slow+litterC_bg+soilC_surf+soilC_fast+soilC_slow;' -selyear,2020/2029 /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK totc_${MOD}_${VAR}_${SSP}_2020.nc;
+
+cdo -L timmean -mul -selyear,2020/2029 -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK agb_${MOD}_${VAR}_${SSP}_2020.nc;
+
+cdo -L timmean -mul -selyear,2020/2029 -selvar,burnedf /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK burnedf_${MOD}_${VAR}_${SSP}_2020.nc;
+
+# decadal means for 2040s
+cdo -L timmean -mul -expr,'totalcarbon=livebiomass+litterC_fast+litterC_slow+litterC_bg+soilC_surf+soilC_fast+soilC_slow;' -selyear,2040/2049 /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK totc_${MOD}_${VAR}_${SSP}_2040.nc;
+
+cdo -L timmean -mul -selyear,2040/2049 -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK agb_${MOD}_${VAR}_${SSP}_2040.nc;
+
+cdo -L timmean -mul -selyear,2040/2049 -selvar,burnedf /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK burnedf_${MOD}_${VAR}_${SSP}_2040.nc;
+
+# decadal means for 2090s
+cdo -L timmean -mul -expr,'totalcarbon=livebiomass+litterC_fast+litterC_slow+litterC_bg+soilC_surf+soilC_fast+soilC_slow;' -selyear,2090/2099  /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK totc_${MOD}_${VAR}_${SSP}_2090.nc;
+
+cdo -L timmean -mul -selyear,2090/2099 -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK agb_${MOD}_${VAR}_${SSP}_2090.nc;
+
+cdo -L timmean -mul -selyear,2090/2099 -selvar,burnedf /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK burnedf_${MOD}_${VAR}_${SSP}_2090.nc;
+done;
+done;
+done
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for VAR in ctl ctl_fire ctl_fixco2_fire ctl_fixco2_2014_fire restor restor_fire restor_cl_fire restor_fixco2_1850_fire restor_fixco2_2014_fire;
+do
+for TIME in 2020 2040 2090;
+do
+for VAR1 in agb totc burnedf;
+do
+cdo merge ${VAR1}_*_${VAR}_${SSP}_${TIME}.nc ${VAR1}_${SSP}_${VAR}_${TIME}_ens.nc
+rm ${VAR1}_*_${VAR}_${SSP}_${TIME}.nc
+done;
+done;
+done;
+done
+
+# R script to get variables
+

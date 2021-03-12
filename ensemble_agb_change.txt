@@ -1,0 +1,83 @@
+## agb changes
+cd /home/terraces/projects/LPJ_futuretropics/agb/
+
+MASK=/home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+for VAR in ctl_fire ct ctl_fixco2_fire;
+do
+# decadal means for 1860s
+cdo timmean -mul -selyear,1860/1869 -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_ssp126_30min_global_${VAR}.nc $MASK ${MOD}_${VAR}_1860.nc;
+done
+done
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for VAR in ctl_fixco2_2014 ctl ctl_fire restor_fire restor_cl_fire ctl_fixco2_2014_fire ctl_fixco2_fire;
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+
+# decadal means for 2020s
+cdo -L timmean -mul -selyear,2020/2029 -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK ${MOD}_${SSP}_${VAR}_2020.nc;
+
+# decadal means for 2040s
+cdo -L timmean -mul -selyear,2040/2049 -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK ${MOD}_${SSP}_${VAR}_2040.nc;
+
+# decadal means for 2090s
+cdo -L timmean -mul -selyear,2090/2099 -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK ${MOD}_${SSP}_${VAR}_2090.nc;
+
+
+cdo sub ${MOD}_${SSP}_ctl_2020.nc ${MOD}_ctl_1860.nc albiomass_${MOD}_${SSP}_ctl_diff_2020-1860.nc
+cdo sub ${MOD}_${SSP}_ctl_fire_2020.nc ${MOD}_ctl_fire_1860.nc albiomass_${MOD}_${SSP}_ctl_fire_diff_2020-1860.nc
+cdo sub ${MOD}_${SSP}_ctl_fixco2_fire_2020.nc ${MOD}_ctl_fixco2_fire_1860.nc albiomass_${MOD}_${SSP}_ctl_fixco2_fire_diff_2020-1860.nc
+cdo sub ${MOD}_${SSP}_${VAR}_2040.nc ${MOD}_${SSP}_${VAR}_2020.nc albiomass_${MOD}_${SSP}_${VAR}_diff_2040-2020.nc
+cdo sub ${MOD}_${SSP}_${VAR}_2090.nc ${MOD}_${SSP}_${VAR}_2020.nc albiomass_${MOD}_${SSP}_${VAR}_diff_2090-2020.nc
+
+done;
+
+cdo merge albiomass_*_${SSP}_${VAR}_diff_2040-2020.nc albiomass_${SSP}_${VAR}_diff_2040-2020_ens.nc
+cdo merge albiomass_*_${SSP}_${VAR}_diff_2090-2020.nc albiomass_${SSP}_${VAR}_diff_2090-2020_ens.nc
+
+done;
+cdo merge albiomass_*_${SSP}_ctl_diff_2020-1860.nc albiomass_${SSP}_ctl_diff_2020-1860_ens.nc
+cdo merge albiomass_*_${SSP}_ctl_fire_diff_2020-1860.nc albiomass_${SSP}_ctl_fire_diff_2020-1860_ens.nc
+
+cdo merge albiomass_*_${SSP}_ctl_fixco2_fire_diff_2020-1860.nc albiomass_${SSP}_ctl_fixco2_fire_diff_2020-1860_ens.nc
+cdo merge albiomass_*_${SSP}_ctl_fixco2_fire_diff_2020-1860.nc albiomass_${SSP}_ctl_fixco2_fire_diff_2020-1860_ens.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for VAR in ctl_fixco2_2014 ctl ctl_fire restor_fire restor_cl_fire ctl_fire_fixco2_2014;
+do
+for TIME in 2020-1860 2040-2020 2090-2020;
+do
+cdo -L -mul /home/terraces/projects/LPJ_futuretropics/agb/albiomass_${SSP}_${VAR}_diff_${TIME}_ens.nc -gridarea /home/terraces/projects/LPJ_futuretropics/agb/albiomass_${SSP}_${VAR}_diff_${TIME}_ens.nc /home/terraces/projects/LPJ_futuretropics/agb/totalbiomass_${SSP}_${VAR}_diff_${TIME}_ens.nc
+Rscript --vanilla /home/akoch/scripts/future_forests/ensemble_agb_change_continents.R /home/terraces/projects/LPJ_futuretropics/agb/totalbiomass_${SSP}_${VAR}_diff_${TIME}_ens.nc /home/akoch/data/carbon_offsets/ne_10m_admin_0_countries.shp /home/terraces/projects/LPJ_futuretropics/agb/totalbiomass_${SSP}_${VAR}_diff_${TIME}_ens.csv
+done;
+done;
+done
+
+#### MAPS of AGB change ###############################################3
+VAR=ctl_fire
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+cdo ensmean *_${SSP}_${VAR}_2020.nc albiomass_${SSP}_${VAR}_2020_ensmean.nc
+for TIME in 2040-2020 2090-2020;
+do
+cdo ensmean albiomass_*_${SSP}_${VAR}_diff_${TIME}.nc albiomass_${SSP}_${VAR}_diff_${TIME}_ensmean.nc
+/home/akoch/scripts/future_forests/Knutti_R.py albiomass_${SSP}_${VAR}_diff_${TIME}_ens.nc albiomass albiomass_${SSP}_${VAR}_2020_ensmean.nc R_albiomass_${SSP}_${VAR}_${TIME}.nc; 
+ncrename -v albiomass,R R_albiomass_${SSP}_${VAR}_${TIME}.nc
+cdo expr,'R=R>=0.8' R_albiomass_${SSP}_${VAR}_${TIME}.nc tmp.nc 
+mv tmp.nc R_albiomass_${SSP}_${VAR}_${TIME}.nc
+done;
+
+cdo ensmean *_ctl_fire_1860.nc albiomass_ctl_fire_1860_ensmean.nc
+/home/akoch/scripts/future_forests/Knutti_R.py albiomass_${SSP}_${VAR}_diff_2020-1860_ens.nc albiomass albiomass_ctl_fire_1860_ensmean.nc R_albiomass_${SSP}_${VAR}_2020-1860.nc; 
+ncrename -v albiomass,R R_albiomass_${SSP}_${VAR}_2020-1860.nc
+cdo expr,'R=R>=0.8' R_albiomass_${SSP}_${VAR}_2020-1860.nc tmp.nc 
+mv tmp.nc R_albiomass_${SSP}_${VAR}_2020-1860.nc
+done
+
+rm ctl_*.nc; rm restor_*.nc

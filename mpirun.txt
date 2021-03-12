@@ -1,0 +1,27 @@
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5; 
+do 
+cp /home/akoch/LPJ/LPJ-LMfire/joboptions/template_ssps.namelist /home/akoch/LPJ/LPJ-LMfire/joboptions/${MOD}_ssp3_no_lght.namelist; 
+sed -i "s/MODEL/$MOD/g" /home/akoch/LPJ/LPJ-LMfire/joboptions/${MOD}_ssp3_no_lght.namelist; 
+done
+
+
+
+for MOD in ACCESS-CM2_ssp3_no_lght ACCESS-ESM1-5_ssp3_no_lght AWI-CM-1-1-MR_ssp3_no_lght BCC-CSM2-MR_ssp3_no_lght;
+do
+mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${MOD}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${MOD}.nc;
+done
+
+for MOD in CanESM5_ssp3_no_lght EC-Earth3-Veg_ssp3_no_lght FGOALS-g3_ssp3_no_lght GFDL-ESM4_ssp3_no_lght;
+do
+mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${MOD}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${MOD}.nc;
+done
+
+for MOD in INM-CM4-8_ssp3_no_lght INM-CM5-0_ssp3_no_lght IPSL-CM6A-LR_ssp3_no_lght MIROC6_ssp3_no_lght;
+do
+mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${MOD}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${MOD}.nc;
+done
+
+for MOD in MPI-ESM1-2-HR_ssp3_no_lght MRI-ESM2-0_ssp3_no_lght;
+do
+mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${MOD}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${MOD}.nc;
+done

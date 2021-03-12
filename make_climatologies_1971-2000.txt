@@ -1,0 +1,110 @@
+TARGET=/home/akoch/terraces/datasets/climategenerator_data/climatology_1971-2000/cmip6/
+CMIP=/home/akoch/terraces/datasets/CMIP6/historical/Amon/
+
+## extract 1971-2000 #########################################################
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5 NorESM2-LM;
+do
+mkdir ${TARGET}/${MOD}
+for VAR in clt mc pr sfcWind tas tasmax tasmin prc;
+do
+ncks -O -d time,1452,1811 ${CMIP}${VAR}/${VAR}_Amon_${MOD}_historical_r1i1p1f1_*_185001-201412.nc ${TARGET}/${MOD}/${VAR}_Amon_${MOD}_197101-200012.nc;
+echo ${TARGET}/${MOD}/${VAR}_Amon_${MOD}_197101-200012.nc;
+done;
+done
+
+## REMEMBER TASMIN TASMAX FOR NorESM is 1950-2014!!!
+for VAR in tasmax tasmin;
+do
+ncks -O -d time,252,611 ${CMIP}${VAR}/${VAR}_Amon_${MOD}_historical_r1i1p1f1_*_195001-201412.nc ${TARGET}/${MOD}/${VAR}_Amon_${MOD}_197101-200012.nc;
+echo ${TARGET}/${MOD}/${VAR}_Amon_${MOD}_197101-200012.nc;
+done
+
+## make climatology ##########################################################
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5 NorESM2-LM;
+do
+for VAR in clt mc pr sfcWind tas tasmax tasmin;
+do
+cdo ymonmean ${TARGET}/${MOD}/${VAR}_Amon_${MOD}_197101-200012.nc ${TARGET}/${MOD}/${VAR}_Amon_${MOD}_197101-200012_clim.nc;
+mv ${TARGET}/${MOD}/${VAR}_Amon_${MOD}_197101-200012_clim.nc ${TARGET}/${MOD}/${VAR}_Amon_${MOD}_197101-200012.nc;
+done;
+done
+
+## extract mc level #########################################################
+for MOD in BCC-CSM2-MR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6;
+do
+ncks -d lev,0.44,0.44 ${TARGET}/${MOD}/mc_Amon_${MOD}_197101-200012.nc ${TARGET}/${MOD}/mc_lvl_Amon_${MOD}_197101-200012.nc;
+done
+
+## convert temperature ######################################################
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5 NorESM2-LM;
+do
+cdo addc,-273.15 ${TARGET}/${MOD}/tas_Amon_${MOD}_197101-200012.nc ${TARGET}/${MOD}/tas_Amon_${MOD}_197101-200012_C.nc;
+mv ${TARGET}/${MOD}/tas_Amon_${MOD}_197101-200012_C.nc ${TARGET}/${MOD}/tas_Amon_${MOD}_197101-200012.nc
+
+cdo addc,-273.15 ${TARGET}/${MOD}/tasmin_Amon_${MOD}_197101-200012.nc ${TARGET}/${MOD}/tasmin_Amon_${MOD}_197101-200012_C.nc;
+mv ${TARGET}/${MOD}/tasmin_Amon_${MOD}_197101-200012_C.nc ${TARGET}/${MOD}/tasmin_Amon_${MOD}_197101-200012.nc
+
+cdo addc,-273.15 ${TARGET}/${MOD}/tasmax_Amon_${MOD}_197101-200012.nc ${TARGET}/${MOD}/tasmax_Amon_${MOD}_197101-200012_C.nc;
+mv ${TARGET}/${MOD}/tasmax_Amon_${MOD}_197101-200012_C.nc ${TARGET}/${MOD}/tasmax_Amon_${MOD}_197101-200012.nc
+done
+
+## make dtr #################################################################
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+cdo -f nc4 sub ${TARGET}/${MOD}/tasmax_Amon_${MOD}_197101-200012.nc ${TARGET}/${MOD}/tasmin_Amon_${MOD}_197101-200012.nc ${TARGET}/${MOD}/dtr_Amon_${MOD}_197101-200012.nc;
+ncrename -v tasmax,dtr ${TARGET}/${MOD}/dtr_Amon_${MOD}_197101-200012.nc;
+done
+
+## make wetdays #############################################################
+codedir=/home/akoch/LPJ/climategenerator/tools
+coeffile=$codedir/wetVpre_cruts400.nc #pre2wet_coeffs_rotated.nc
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+cdo mulc,86400 ${TARGET}/${MOD}/pr_Amon_${MOD}_197101-200012.nc ${TARGET}/${MOD}/pr_Amon_${MOD}_197101-200012_day.nc
+cdo muldpm ${TARGET}/${MOD}/pr_Amon_${MOD}_197101-200012_day.nc ${TARGET}/${MOD}/preacc_Amon_${MOD}_197101-200012.nc
+ncrename -v pr,prec ${TARGET}/${MOD}/preacc_Amon_${MOD}_197101-200012.nc
+done
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+cdo -f nc4 -P 8 remapbic,/home/akoch/LPJ/climategenerator/tools/grid144x90 ${TARGET}/${MOD}/preacc_Amon_${MOD}_197101-200012.nc ${TARGET}/${MOD}/preacc_144x90_Amon_${MOD}_197101-200012.nc;
+done
+# regridding is necessary because of error NetCDF: Start+count exceeds dimension bound
+# but causes files to lose their boundaries so they need to be recreated
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+ncap2 -O -s 'defdim("bnds",2);lat_bnds=make_bounds(lat,$bnds); lon_bnds=make_bounds(lon,$bnds);time_bnds=make_bounds(time,$bnds);' ${TARGET}/${MOD}/preacc_144x90_Amon_${MOD}_197101-200012.nc ${TARGET}/${MOD}/preacc_144x90_Amon_${MOD}_197101-200012.nc;
+done
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+ncgen -k nc4 -o ${TARGET}/${MOD}/wetdays_Amon_${MOD}_197101-200012.nc /home/akoch/LPJ/climategenerator/tools/wetdays.cdl
+done
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+$codedir/calcwetdays ${TARGET}/${MOD}/preacc_144x90_Amon_${MOD}_197101-200012.nc $coeffile ${TARGET}/${MOD}/wetdays_Amon_${MOD}_197101-200012.nc;
+echo ${TARGET}/${MOD}/wetdays_Amon_${MOD}_197101-200012.nc;
+done
+
+## rotate clt mc_lvl sfcWind tas dtr #########################################
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+for VAR in clt mc_lvl sfcWind tas dtr;
+do
+cdo sellonlatbox,-180,180,-90,90 ${TARGET}/${MOD}/${VAR}_Amon_${MOD}_197101-200012.nc ${TARGET}/${MOD}/${VAR}_Amon_${MOD}_197101-200012_R.nc; 
+mv ${TARGET}/${MOD}/${VAR}_Amon_${MOD}_197101-200012_R.nc ${TARGET}/${MOD}/${VAR}_Amon_${MOD}_197101-200012.nc;
+done;
+done
+
+## calc lightning #############################################################
+for MOD in BCC-CSM2-MR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6;
+do 
+LAND=$(ls /home/akoch/terraces/datasets/CMIP6/land_mask/sftlf_fx_${MOD}*_rotated.nc)
+python /home/akoch/LPJ/climategenerator/tools/magi_lightning.py ${TARGET}/${MOD}/mc_lvl_Amon_${MOD}_197101-200012.nc ${LAND} ${TARGET}/${MOD}/lght_Amon_${MOD}_197101-200012.nc 
+done
+
+FOR Jed:
+ncks: symbol lookup error: /home/public/easybuild/software/netCDF/4.7.4-gompi-2020a/lib64/libnetcdf.so.18: undefined symbol: H5Pset_all_coll_metadata_ops

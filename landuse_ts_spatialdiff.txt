@@ -1,0 +1,39 @@
+## time series of pasture and crop for SSPs and SSPs+restor
+
+MASK=/home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do 
+
+cdo -L fldsum -mul -mul /home/terraces/datasets/dgvm_input/landuse/luhv2_states_${SSP}_1850-2100_30min.nc -gridarea $MASK $MASK /home/terraces/projects/LPJ_futuretropics/tmp.nc
+cdo divc,1e11 /home/terraces/projects/LPJ_futuretropics/tmp.nc /home/terraces/projects/LPJ_futuretropics/landuse_${SSP}_ctl_ts.nc
+cdo -L fldsum -mul -mul /home/terraces/datasets/dgvm_input/landuse/luhv2_states_${SSP}_1850-2100_30min_restor.nc -gridarea $MASK $MASK /home/terraces/projects/LPJ_futuretropics/tmp.nc
+cdo divc,1e11 /home/terraces/projects/LPJ_futuretropics/tmp.nc /home/terraces/projects/LPJ_futuretropics/landuse_${SSP}_restor_ts.nc
+
+ncatted -O -a units,lu_crop,m,c,"Mha" /home/terraces/projects/LPJ_futuretropics/landuse_${SSP}_ctl_ts.nc
+ncatted -O -a units,lu_past,m,c,"Mha" /home/terraces/projects/LPJ_futuretropics/landuse_${SSP}_ctl_ts.nc
+ncatted -O -a units,lu_crop,m,c,"Mha" /home/terraces/projects/LPJ_futuretropics/landuse_${SSP}_restor_ts.nc
+ncatted -O -a units,lu_past,m,c,"Mha" /home/terraces/projects/LPJ_futuretropics/landuse_${SSP}_restor_ts.nc
+
+cdo -L -mul -sub -selvar,lu_past -selyear,2050,2100 /home/terraces/datasets/dgvm_input/landuse/luhv2_states_${SSP}_1850-2100_30min_restor.nc -selvar,lu_past -selyear,2050,2100 /home/terraces/datasets/dgvm_input/landuse/luhv2_states_${SSP}_1850-2100_30min.nc $MASK /home/terraces/projects/LPJ_futuretropics/pastdiff_${SSP}_spatial.nc
+
+done
+
+## restoration areas only
+
+MASK=/home/terraces/projects/LPJ_futuretropics/afforestation_mask_tropics.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do 
+
+cdo -L fldsum -mul -mul /home/terraces/datasets/dgvm_input/landuse/luhv2_states_${SSP}_1850-2100_30min.nc -gridarea $MASK $MASK /home/terraces/projects/LPJ_futuretropics/tmp.nc
+cdo divc,1e11 /home/terraces/projects/LPJ_futuretropics/tmp.nc /home/terraces/projects/LPJ_futuretropics/landuse_${SSP}_ctl_RA_ts.nc
+cdo -L fldsum -mul -mul /home/terraces/datasets/dgvm_input/landuse/luhv2_states_${SSP}_1850-2100_30min_restor.nc -gridarea $MASK $MASK /home/terraces/projects/LPJ_futuretropics/tmp.nc
+cdo divc,1e11 /home/terraces/projects/LPJ_futuretropics/tmp.nc /home/terraces/projects/LPJ_futuretropics/landuse_${SSP}_restor_RA_ts.nc
+
+ncatted -O -a units,lu_crop,m,c,"Mha" /home/terraces/projects/LPJ_futuretropics/landuse_${SSP}_ctl_RA_ts.nc
+ncatted -O -a units,lu_past,m,c,"Mha" /home/terraces/projects/LPJ_futuretropics/landuse_${SSP}_ctl_RA_ts.nc
+ncatted -O -a units,lu_crop,m,c,"Mha" /home/terraces/projects/LPJ_futuretropics/landuse_${SSP}_restor_RA_ts.nc
+ncatted -O -a units,lu_past,m,c,"Mha" /home/terraces/projects/LPJ_futuretropics/landuse_${SSP}_restor_RA_ts.nc
+
+done

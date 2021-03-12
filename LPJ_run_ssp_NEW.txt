@@ -1,0 +1,162 @@
+cd LPJ/LPJ-LMfire-future/
+module purge; module load netCDF-Fortran/4.5.3-gompi-2020a
+
+## C2 ########################################################################
+## CONTROL RUN
+cd LPJ/LPJ-LMfire-future/
+module purge; module load netCDF-Fortran/4.5.3-gompi-2020a
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in EC-Earth3-Veg IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR INM-CM4-8 INM-CM5-0 CanESM5;
+do
+RUN=_30min_global_ctl
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 31 src/lpj joboptions/${NML}.namelist -125/180/-37/37 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv >> ${NML}_fire;
+done
+done
+## DONE FRIDAY
+
+
+## C3 ########################################################################
+## RESTORATION RUN
+cd LPJ/LPJ-LMfire-future/
+module purge; module load netCDF-Fortran/4.5.3-gompi-2020a
+for MOD in EC-Earth3-Veg IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR INM-CM4-8 INM-CM5-0 CanESM5;
+do
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+RUN=_30min_global_restor
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 31 src/lpj joboptions/${NML}.namelist -125/180/-37/37 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv >> ${NML}_fire;
+
+RUN=_30min_global_restor_fixco2_2014
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 31 src/lpj joboptions/${NML}.namelist -125/180/-37/37 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv >> ${NML}_fire;
+
+RUN=_30min_global_restor_fixco2_1850
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 31 src/lpj joboptions/${NML}.namelist -125/180/-37/37 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv >> ${NML}_fire;
+done
+done
+## DONE TUESDAY
+
+## c4 ######################################################################
+## CONTROL RUN (FIX CO2)
+cd LPJ/LPJ-LMfire-future/
+module purge; module load netCDF-Fortran/4.5.3-gompi-2020a
+for MOD in EC-Earth3-Veg IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR INM-CM4-8 INM-CM5-0 CanESM5;
+do
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+RUN=_30min_global_ctl_fixco2_2014
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 31 src/lpj joboptions/${NML}.namelist -125/180/-37/37 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv >> ${NML}_fire;
+
+RUN=_30min_global_ctl_fixco2_1850
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 31 src/lpj joboptions/${NML}.namelist -125/180/-37/37 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv >> ${NML}_fire;
+done
+done
+## DONE MONDAY 7AM
+
+## C2 ########################################################################
+# RUN FRIDAY EVENING
+## RESTOR RUN (NO FIRE)
+cd LPJ/LPJ-LMfire-future/
+module purge; module load netCDF-Fortran/4.5.3-gompi-2020a
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in BCC-CSM2-MR EC-Earth3-Veg IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR INM-CM4-8 INM-CM5-0 CanESM5;
+do
+RUN=_30min_global_restor
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 31 ../LPJ-LMfire-nofire/src/lpj joboptions/${NML}.namelist -125/180/-37/37 /home/terraces/datasets/dgvm_output/${NML}.nc pftpars_global.csv;
+done
+done
+
+cd LPJ/LPJ-LMfire-future/
+module purge; module load netCDF-Fortran/4.5.3-gompi-2020a
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in BCC-CSM2-MR EC-Earth3-Veg IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR INM-CM4-8 INM-CM5-0 CanESM5;
+do
+RUN=_30min_global_restor_fixco2_2014
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 31 ../LPJ-LMfire-nofire/src/lpj joboptions/${NML}.namelist -125/180/-37/37 /home/terraces/datasets/dgvm_output/${NML}.nc pftpars_global.csv;
+done
+done
+
+## DONE SUNDAY
+
+## C2 ########################################################################
+## FIXED CLIMATE ############################################################## BCC-CSM2-MR already done 
+cd LPJ/LPJ-LMfire-future/
+module purge; module load netCDF-Fortran/4.5.3-gompi-2020a
+for SSP in ssp126;
+do
+for MOD in EC-Earth3-Veg IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR INM-CM4-8 INM-CM5-0 CanESM5;
+do
+RUN=_30min_global_restor_fixclim_2014
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 31 src/lpj joboptions/${NML}.namelist -125/180/-37/37 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv >> ${NML};
+
+RUN=_30min_global_ctl_fixclim_2014
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 31 src/lpj joboptions/${NML}.namelist -125/180/-37/37 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv >> ${NML};
+done
+done
+
+## c3 ###################################################################### BCC-CSM2-MR 
+## TILE FIRE ################################################################  split with c4 later
+cd LPJ/LPJ-LMfire-future/
+module purge; module load netCDF-Fortran/4.5.3-gompi-2020a
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in EC-Earth3-Veg IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR INM-CM4-8 INM-CM5-0 CanESM5;
+do
+RUN=_30min_global_restor_tiles
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 31 ../LPJ-LMfire-t3fire/src/lpj joboptions/${NML}.namelist -125/180/-37/37 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv >> ${NML};
+
+done
+done
+
+cd LPJ/LPJ-LMfire-future/
+module purge; module load netCDF-Fortran/4.5.3-gompi-2020a
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in EC-Earth3-Veg IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR INM-CM4-8 INM-CM5-0 CanESM5;
+do
+RUN=_30min_global_restor_fixco2_2014_tiles
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 31 ../LPJ-LMfire-t3fire/src/lpj joboptions/${NML}.namelist -125/180/-37/37 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+
+done
+done
+## CONTROL RUN ###############################################################
+cd LPJ/LPJ-LMfire-future/
+module purge; module load netCDF-Fortran/4.5.3-gompi-2020a
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in BCC-CSM2-MR EC-Earth3-Veg IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR INM-CM4-8 INM-CM5-0 CanESM5;
+do
+RUN=_30min_global_ctl_trans
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 31 src/lpj joboptions/${NML}.namelist -125/180/-37/37 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv >> ${NML};
+
+done
+done
+
+## no lightning
+cd LPJ/LPJ-LMfire-future/
+module purge; module load netCDF-Fortran/4.5.3-gompi-2020a
+for SSP in ssp370;
+do
+for MOD in BCC-CSM2-MR EC-Earth3-Veg IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR INM-CM4-8 INM-CM5-0 CanESM5;
+do
+RUN=_30min_global_ctl_no_lght
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 31 src/lpj joboptions/${NML}.namelist -125/180/-37/37 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+
+done
+done

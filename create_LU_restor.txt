@@ -1,0 +1,13 @@
+########
+ncks -O -v lu_past -d time,165 /home/terraces/datasets/dgvm_input/landuse/landuse_fix2014.nc /home/terraces/datasets/dgvm_input/landuse/lu_past_2014.nc;
+cdo sub /home/terraces/datasets/dgvm_input/landuse/lu_past_2014.nc /home/terraces/datasets/vegetation/afforestation_frac_30min.nc /home/terraces/datasets/dgvm_input/landuse/lu_past_restor_2014.nc;
+ncap2 -s 'where(lu_past<0.) lu_past=0.' /home/terraces/datasets/dgvm_input/landuse/lu_past_restor_2014.nc -O  /home/terraces/datasets/dgvm_input/landuse/lu_past_restor_2014.nc;
+rm /home/terraces/datasets/dgvm_input/landuse/lu_past_2014.nc
+#######
+cp landuse_fix2014 landuse_restor_fix2014.nc
+
+# R SetLU1850.R
+Rscript --vanilla /home/akoch/scripts/future_forests/create_LU_netcdf.R /home//terraces/datasets/dgvm_input/landuse/landuse_fix2014.nc /home//terraces/datasets/dgvm_input/landuse/landuse_fix2014_forLPJ.nc
+Rscript --vanilla /home/akoch/scripts/future_forests/create_LU_netcdf.R /home//terraces/datasets/dgvm_input/landuse/landuse_restor_fix2014.nc /home//terraces/datasets/dgvm_input/landuse/landuse_restor_fix2014_forLPJ.nc
+ncap2 -O -s 'lon=float(lon); lat=float(lat)' /home//terraces/datasets/dgvm_input/landuse/landuse_fix2014_forLPJ.nc /home//terraces/datasets/dgvm_input/landuse/landuse_fix2014_forLPJ.nc
+ncap2 -O -s 'lon=float(lon); lat=float(lat)' /home//terraces/datasets/dgvm_input/landuse/landuse_restor_fix2014_forLPJ.nc /home//terraces/datasets/dgvm_input/landuse/landuse_restor_fix2014_forLPJ.nc

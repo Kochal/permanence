@@ -1,0 +1,38 @@
+cd /home/akoch/terraces/projects/LPJ_futuretropics/totc_restor
+MASK=/home/terraces/projects/LPJ_futuretropics/afforestation_mask_tropics.nc
+FACTOR=/home/terraces/projects/LPJ_futuretropics/SEAmazon.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for VAR in restor_fixco2_2014_fire restor_fire;
+do
+cdo -L add t3C_${SSP}_${VAR}_2090_ens.nc -mul t3C_${SSP}_${VAR}_2090_ens.nc -subc,0.6 $FACTOR t3C_${SSP}_${VAR}_2090_ens_adj.nc
+done
+
+VAR=restor_tiles_fire
+
+cdo -L add t3_burneda_${SSP}_${VAR}_2090_ens.nc -mul t3_burneda_${SSP}_${VAR}_2090_ens.nc -subc,0.6 $FACTOR t3_burneda_${SSP}_${VAR}_2090_ens_adj.nc
+done
+
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for VAR in restor_fixco2_2014_fire restor_fire;
+do
+Rscript --vanilla /home/akoch/scripts/future_forests/burnt_area_cntr.R t3C_${SSP}_${VAR}_2090_ens_adj.nc /home/akoch/data/carbon_offsets/ne_10m_admin_0_countries.shp t3C_${SSP}_${VAR}_2090_ens_adj.csv
+done;
+VAR=restor_tiles_fire
+Rscript --vanilla /home/akoch/scripts/future_forests/burnt_area_cntr.R t3_burneda_${SSP}_${VAR}_2090_ens_adj.nc /home/akoch/data/carbon_offsets/ne_10m_admin_0_countries.shp t3_burneda_${SSP}_${VAR}_2090_ens_adj.csv
+done
+
+## SAVANNA
+cd /home/terraces/projects/LPJ_futuretropics/fire/
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+cdo -L add t3_burnedf_nosav_${MOD}_${SSP}.nc -mul t3_burnedf_nosav_${MOD}_${SSP}.nc -subc,0.6 $FACTOR t3_burnedf_nosav_${MOD}_${SSP}_adj.nc
+cdo -L add t3_burnedf_sav_${MOD}_${SSP}.nc -mul t3_burnedf_sav_${MOD}_${SSP}.nc -subc,0.6 $FACTOR t3_burnedf_sav_${MOD}_${SSP}_adj.nc
+done;
+done

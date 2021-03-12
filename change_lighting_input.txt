@@ -1,0 +1,224 @@
+for MOD in BCC-CSM2-MR;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_spinup_1850-1859_30min_global.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_spinup_1850-1859_30min_global.nc ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_spinup_1850-1859_30min_global.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+done;
+done
+
+for MOD in IPSL-CM6A-LR ;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_spinup_1850-1859_30min_global.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_spinup_1850-1859_30min_global.nc ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_spinup_1850-1859_30min_global.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+done;
+done
+
+for MOD in MPI-ESM1-2-HR ;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_spinup_1850-1859_30min_global.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_spinup_1850-1859_30min_global.nc ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_spinup_1850-1859_30min_global.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+done;
+done
+
+
+for MOD in MRI-ESM2-0 ;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_spinup_1850-1859_30min_global.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_spinup_1850-1859_30min_global.nc ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_spinup_1850-1859_30min_global.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+done;
+done
+
+for MOD in FGOALS-g3 ;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_spinup_1850-1859_30min_global.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_spinup_1850-1859_30min_global.nc ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_spinup_1850-1859_30min_global.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+done;
+done
+
+for MOD in MIROC6 ;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_spinup_1850-1859_30min_global.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_spinup_1850-1859_30min_global.nc ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_spinup_1850-1859_30min_global.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+done;
+done
+
+for MOD in ACCESS-CM2 ;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_spinup_1850-1859_30min_global.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_spinup_1850-1859_30min_global.nc ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_spinup_1850-1859_30min_global.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+done;
+done
+
+for MOD in ACCESS-ESM1-5 ;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_spinup_1850-1859_30min_global.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_spinup_1850-1859_30min_global.nc ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_spinup_1850-1859_30min_global.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+done;
+done
+
+for MOD in AWI-CM-1-1-MR;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_spinup_1850-1859_30min_global.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_spinup_1850-1859_30min_global.nc ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_spinup_1850-1859_30min_global.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+done;
+done
+
+for MOD in EC-Earth3-Veg ;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_spinup_1850-1859_30min_global.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_spinup_1850-1859_30min_global.nc ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_spinup_1850-1859_30min_global.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+done;
+done
+
+for MOD in INM-CM4-8 ;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_spinup_1850-1859_30min_global.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_spinup_1850-1859_30min_global.nc ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_spinup_1850-1859_30min_global.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+done;
+done
+
+for MOD in INM-CM5-0 ;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_spinup_1850-1859_30min_global.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_spinup_1850-1859_30min_global.nc ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_spinup_1850-1859_30min_global.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+done;
+done
+
+for MOD in CanESM5;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_spinup_1850-1859_30min_global.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_spinup_1850-1859_30min_global.nc ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_spinup_1850-1859_30min_global.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+done;
+done
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_spinup_1850-1859_30min_global.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_spinup_1850-1859_30min_global.nc ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_spinup_1850-1859_30min_global.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_spinup_1850-1859_30min_global.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+ncatted -O -a _FillValue,lght,m,f,-32768 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncap2 -O -s 'lght=short(lght*1e5)' ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a scale_factor,lght,a,f,1.e-5 ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+ncatted -O -a add_offset,lght,a,f,0. ${MOD}_${SSP}_1850-2100_30min_global_ctl.nc
+done;
+done

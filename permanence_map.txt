@@ -1,0 +1,51 @@
+cd /home/terraces/projects/LPJ_futuretropics/permanence/
+
+MASK=/home/terraces/projects/LPJ_futuretropics/restoration_mask_tropics.nc
+AFFOR=/home/terraces/datasets/vegetation/restor_frac_tropics.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for VAR in restor_fixco2_2014_fire; #restor_fire
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+#cdo -L -mul -selyear,2015/2100 -selvar,albiomass  /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK tmp.nc
+
+cdo -L -mul -selyear,2015/2100 -sellevel,3 -selvar,tilecarbon  /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK tmp.nc
+
+## take difference between 2100 and 2020 in above ground biomass
+cdo -L -sub -selyear,2100 tmp.nc -selyear,2015 tmp.nc tmp_diff.nc
+## mask the restoration areas with more biomass in 2100 over all years  
+#cdo -L -mul tmp.nc -expr,"albiomass=albiomass>0" tmp_diff.nc tmp_agb_gain.nc
+
+cdo -L -mul tmp.nc -expr,"tilecarbon=tilecarbon>0" tmp_diff.nc tmp_agb_gain.nc
+## 
+## find all restoration areas where the standard deviation over 2030-2100 exceeds 10% of the 2030-2100 average in tilecarbon
+cdo -L -mul -selyear,2030/2100 -sellevel,3 -selvar,tilecarbon  /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK t3C_tmp.nc
+cdo -L -expr,"tilecarbon=tilecarbon>0" -sub -mulc,0.1 -timmean t3C_tmp.nc -timstd t3C_tmp.nc stable_t3C_tmp.nc
+## combine the two
+#cdo -L -expr,"albiomass=albiomass>1" -add tmp_agb_gain.nc stable_t3C_tmp.nc stable_${MOD}_${SSP}_${VAR}.nc
+
+cdo -L -expr,"tilecarbon=tilecarbon>1" -add tmp_agb_gain.nc stable_t3C_tmp.nc stable_${MOD}_${SSP}_${VAR}.nc
+done;
+## add all ensembles and divde by the number of ensembles to arrive at the permanence indicator
+cdo -L divc,13 -enssum stable_*_${SSP}_${VAR}.nc stable_${SSP}_${VAR}_perc.nc
+#rm stable_*_${SSP}_${VAR}.nc
+
+#cdo -L divc,1e11 -mul -expr,"albiomass=albiomass==1" stable_${SSP}_${VAR}_perc.nc -gridarea  stable_${SSP}_${VAR}_perc.nc stable_${SSP}_${VAR}_gridarea.nc
+
+cdo -L divc,1e11 -mul -expr,"tilecarbon=tilecarbon==1" stable_${SSP}_${VAR}_perc.nc -gridarea  stable_${SSP}_${VAR}_perc.nc stable_${SSP}_${VAR}_gridarea.nc
+done 
+done
+
+rm tmp.nc; rm tmp_diff.nc; rm tmp_agb_gain.nc; rm  tmp_agb_gain.nc 
+## Extract area of permanent restoration per country
+cdo -L -divc,4 -add stable_ssp126_restor_fixco2_2014_fire_perc.nc -add stable_ssp245_restor_fixco2_2014_fire_perc.nc -add stable_ssp370_restor_fixco2_2014_fire_perc.nc stable_ssp585_restor_fixco2_2014_fire_perc.nc stable_sspALL_restor_fixco2_2014_fire_perc.nc
+
+cdo -L -mul -selyear,2015/2100 -sellevel,3 -selvar,tilecarbon  /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK t3C_tmp.nc
+cdo -L -mul -selyear,2015/2100 -sellevel,2 -selvar,tilecarbon  /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK t2C_tmp.nc
+
+cdo -L -mul -selyear,2015/2100 -sellevel,3 -selvar,coverfrac  /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK t3f_tmp.nc
+cdo -L -mul -selyear,2015/2100 -sellevel,2 -selvar,coverfrac  /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK t2f_tmp.nc
+
+cdo -L -add -mul t3C_tmp.nc t3f_tmp.nc -mul t2C_tmp.nc t2f_tmp.nc tilecarbon_tmp.nc

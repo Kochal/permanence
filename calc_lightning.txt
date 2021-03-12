@@ -1,0 +1,8 @@
+TARGET=/home/akoch/terraces/datasets/climategenerator_data/CMIP6_permanence/spinup/
+
+for MOD in BCC-CSM2-MR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6;
+do 
+LAND=$(ls /home/akoch/terraces/datasets/CMIP6/land_mask/sftlf_fx_${MOD}*_rotated.nc)
+python /home/akoch/LPJ/climategenerator/tools/magi_lightning.py ${TARGET}/${MOD}/rawdata/climean/mc_lvl_Amon_${MOD}_185001-185912.nc ${LAND} ${TARGET}/${MOD}/rawdata/climean/lightning_Amon_${MOD}_185001-185912.nc;
+done
+

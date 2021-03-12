@@ -1,0 +1,15 @@
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for VAR in tasmin tasmax;
+do
+ncrcat /home/terraces/datasets/CMIP6/scenarioMIP/${SSP}/Aday/${VAR}/${VAR}_day_NorESM2-LM_${SSP}_r1i1p1f1_gn_* /home/terraces/datasets/CMIP6/scenarioMIP/${SSP}/Aday/${VAR}/${VAR}_day_NorESM2-LM_${SSP}_r1i1p1f1_gn_20150101-21001231.nc;
+cdo monavg /home/terraces/datasets/CMIP6/scenarioMIP/${SSP}/Aday/${VAR}/${VAR}_day_NorESM2-LM_${SSP}_r1i1p1f1_gn_20150101-21001231.nc /home/terraces/datasets/CMIP6/scenarioMIP/${SSP}/Amon/${VAR}_Amon_NorESM2-LM_${SSP}_r1i1p1f1_gn_201501-210012.nc;
+done;
+done
+
+ncrcat tasmin_day_NorESM2-LM_historical_r1i1p1f1_gn_* tasmin_day_NorESM2-LM_historical_r1i1p1f1_gn_19500101-20141231.nc
+cdo monavg tasmin_day_NorESM2-LM_historical_r1i1p1f1_gn_19500101-20141231.nc /home/terraces/datasets/CMIP6/historical/Amon/tasmin/tasmin_Amon_NorESM2-LM_historical_r1i1p1f1_gn_195001-201412.nc
+
+ncrcat tasmax_day_NorESM2-LM_historical_r1i1p1f1_gn_* tasmax_day_NorESM2-LM_historical_r1i1p1f1_gn_19500101-20141231.nc
+cdo monavg tasmax_day_NorESM2-LM_historical_r1i1p1f1_gn_19500101-20141231.nc /home/terraces/datasets/CMIP6/historical/Amon/tasmax/tasmax_Amon_NorESM2-LM_historical_r1i1p1f1_gn_195001-201412.nc

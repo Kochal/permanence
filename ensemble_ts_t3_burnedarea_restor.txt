@@ -1,0 +1,36 @@
+cd /home/terraces/projects/LPJ_futuretropics/fire/
+MASK=/home/terraces/projects/LPJ_futuretropics/afforestation_mask_tropics.nc
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+VAR=restor_tiles_fire
+
+cdo -L  -selyear,2014/2100 -selvar,fireCH4 /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc t3_burnedf.nc
+
+cdo -L  -selyear,2014/2100 -sellevel,3 -selvar,coverfrac /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc t3cover.nc
+
+cdo -L -mul -mul t3_burnedf.nc t3cover.nc -gridarea $MASK t3_burneda.nc
+
+cdo -L fldsum -mul t3_burneda.nc $MASK t3_burneda_${MOD}_${SSP}_${VAR}_ts.nc
+rm t3_burneda.nc ; rm t3cover.nc ; rm t3_burnedf.nc
+
+done
+done
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+VAR=restor_tiles_fire
+VARS=$(ls /home/terraces/projects/LPJ_futuretropics/fire/t3_burneda_*_${SSP}_${VAR}_ts.nc);
+cdo ensmean $VARS t3_burneda_${VAR}_${SSP}_ensmean.nc;
+ncrename -v fireCH4,mean t3_burneda_${VAR}_${SSP}_ensmean.nc;
+cdo ensstd $VARS t3_burneda_${VAR}_${SSP}_ensstd.nc;
+ncrename -v fireCH4,std t3_burneda_${VAR}_${SSP}_ensstd.nc;
+ncks -A -v std t3_burneda_${VAR}_${SSP}_ensstd.nc t3_burneda_${VAR}_${SSP}_ensmean.nc;
+ncatted -O -a title,global,m,c,"Anomalies w.r.t. 2014" t3_burneda_${VAR}_${SSP}_ensmean.nc;
+
+ncap2 -A -s 'conf1=mean-(1.96*(std / sqrt(13)))' t3_burneda_${VAR}_${SSP}_ensmean.nc t3_burneda_${VAR}_${SSP}_ensmean.nc;
+ncap2 -A -s 'conf2=mean+(1.96*(std / sqrt(13)))' t3_burneda_${VAR}_${SSP}_ensmean.nc t3_burneda_${VAR}_${SSP}_ensmean.nc;
+done
+
+

@@ -1,0 +1,68 @@
+MASK=/home/terraces/projects/LPJ_futuretropics/afforestation_mask_tropics.nc
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for MOD in BCC-CSM2-MR; #IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+cdo -L mul -selyear,1970/2100 -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_restor_fixco2_1850_fire.nc $MASK /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_restor_fixco2_1850_fire.nc;
+cdo -L mul -selyear,1970/2100 -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_restor_fixco2_2014_fire.nc $MASK /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_restor_fixco2_2014_fire.nc;
+cdo -L mul -selyear,1970/2100 -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_restor_fire.nc $MASK /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_restor_fire.nc;
+cdo -L mul -selyear,1970/2100 -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl_fixco2_1850_fire.nc $MASK /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_ctl_fixco2_1850_fire.nc;
+cdo -L mul -selyear,1970/2100 -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl_fixco2_2014_fire.nc $MASK /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_ctl_fixco2_2014_fire.nc;
+cdo -L mul -selyear,1970/2100 -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl_fire.nc $MASK /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_ctl_fire.nc;
+
+## create timeseries
+cdo -L -selyear,1970 /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_restor_fixco2_1850_fire.nc /home/terraces/projects/LPJ_futuretropics/agb_restor/tmp.nc;
+cdo -L -fldsum -mul -sub /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_restor_fixco2_1850_fire.nc /home/terraces/projects/LPJ_futuretropics/agb_restor/tmp.nc -gridarea /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_restor_fixco2_1850_fire.nc /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_restor_fixco2_1850_fire_ts.nc;
+ls /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_restor_fixco2_1850_fire_ts.nc;
+
+cdo -L -selyear,1970 /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_restor_fixco2_2014_fire.nc /home/terraces/projects/LPJ_futuretropics/agb_restor/tmp.nc;
+cdo -L -fldsum -mul -sub /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_restor_fixco2_2014_fire.nc /home/terraces/projects/LPJ_futuretropics/agb_restor/tmp.nc -gridarea /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_restor_fixco2_2014_fire.nc /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_restor_fixco2_2014_fire_ts.nc;
+ls /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_restor_fixco2_2014_fire_ts.nc;
+
+cdo -L -selyear,1970 /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_restor_fire.nc /home/terraces/projects/LPJ_futuretropics/agb_restor/tmp.nc;
+cdo -L -fldsum -mul -sub /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_restor_fire.nc /home/terraces/projects/LPJ_futuretropics/agb_restor/tmp.nc -gridarea /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_restor_fire.nc /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_restor_fire_ts.nc;
+ls /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_restor_fire_ts.nc;
+
+cdo -L -selyear,1970 /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_ctl_fixco2_1850_fire.nc /home/terraces/projects/LPJ_futuretropics/agb_restor/tmp.nc;
+cdo -L -fldsum -mul -sub /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_ctl_fixco2_1850_fire.nc /home/terraces/projects/LPJ_futuretropics/agb_restor/tmp.nc -gridarea /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_ctl_fixco2_1850_fire.nc /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_ctl_fixco2_1850_fire_ts.nc;
+ls /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_ctl_fixco2_1850_fire_ts.nc;
+
+cdo -L -selyear,1970 /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_ctl_fixco2_2014_fire.nc /home/terraces/projects/LPJ_futuretropics/agb_restor/tmp.nc;
+cdo -L -fldsum -mul -sub /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_ctl_fixco2_2014_fire.nc /home/terraces/projects/LPJ_futuretropics/agb_restor/tmp.nc -gridarea /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_ctl_fixco2_2014_fire.nc /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_ctl_fixco2_2014_fire_ts.nc;
+ls /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_ctl_fixco2_2014_fire_ts.nc;
+
+cdo -L -selyear,1970 /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_ctl_fire.nc /home/terraces/projects/LPJ_futuretropics/agb_restor/tmp.nc;
+cdo -L -fldsum -mul -sub /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_ctl_fire.nc /home/terraces/projects/LPJ_futuretropics/agb_restor/tmp.nc -gridarea /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_ctl_fire.nc /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_ctl_fire_ts.nc;
+ls /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_${SSP}_ctl_fire_ts.nc;
+done
+
+#cdo -L fldsum -sub -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_restor_fire.nc -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl_fire.nc tmp.nc
+
+for VAR in restor_fixco2_1850_fire restor_fixco2_2014_fire restor_fire ctl_fire ctl_fixco2_2014_fire ctl_fixco2_1850_fire;
+do
+VARS=$(ls /home/terraces/projects/LPJ_futuretropics/agb_restor/*_${SSP}_${VAR}_ts.nc);
+cdo ensmean $VARS agb_${VAR}_${SSP}_ensmean.nc;
+ncrename -v albiomass,mean agb_${VAR}_${SSP}_ensmean.nc;
+cdo ensstd $VARS agb_${VAR}_${SSP}_ensstd.nc;
+ncrename -v albiomass,std agb_${VAR}_${SSP}_ensstd.nc;
+ncks -A -v std agb_${VAR}_${SSP}_ensstd.nc agb_${VAR}_${SSP}_ensmean.nc;
+ncatted -O -a title,global,m,c,"Anomalies w.r.t. 1970" agb_${VAR}_${SSP}_ensmean.nc;
+
+ncap2 -A -s 'conf1=mean-(1.96*(std / sqrt(13)))' agb_${VAR}_${SSP}_ensmean.nc agb_${VAR}_${SSP}_ensmean.nc;
+ncap2 -A -s 'conf2=mean+(1.96*(std / sqrt(13)))' agb_${VAR}_${SSP}_ensmean.nc agb_${VAR}_${SSP}_ensmean.nc;
+done;
+done
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+cdo -L -fldsum -mul -timmean -selyear,1971/2000 /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_ssp585_ctl_fire.nc -gridarea -selyear,1971/2000 /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_ssp585_ctl_fire.nc /home/terraces/projects/LPJ_futuretropics/agb_restor/${MOD}_ssp585_ctl_fire_1970.nc;
+done
+
+VARS=$(ls /home/terraces/projects/LPJ_futuretropics/agb_restor/*_ssp585_ctl_fire_1970.nc);
+cdo ensmean $VARS agb_ctl_fire_ensmean_1970.nc
+ncrename -v albiomass,mean agb_ctl_fire_ensmean_1970.nc
+cdo ensstd $VARS agb_ctl_fire_ensstd_1970.nc
+ncrename -v albiomass,std agb_ctl_fire_ensstd_1970.nc
+ncks -A -v std agb_ctl_fire_ensstd_1970.nc agb_ctl_fire_ensmean_1970.nc
+ncap2 -A -s 'conf1=mean-(1.96*(std / sqrt(13)))' agb_ctl_fire_ensmean_1970.nc agb_ctl_fire_ensmean_1970.nc
+ncap2 -A -s 'conf2=mean+(1.96*(std / sqrt(13)))' agb_ctl_fire_ensmean_1970.nc agb_ctl_fire_ensmean_1970.nc

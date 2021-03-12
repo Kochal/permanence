@@ -1,0 +1,85 @@
+cd LPJ/LPJ-LMfire-future/
+module purge; module load netCDF-Fortran/4.5.3-gompi-2020a
+RUN=_30min_global_restor
+
+
+#####################################################################################
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in EC-Earth3-Veg IPSL-CM6A-LR MPI-ESM1-2-HR;
+do
+#NML=${MOD}_${SSP}${RUN};
+#mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/datasets/terraces/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+#NML=${MOD}_${SSP}${RUN}_fixco2;
+#mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+#NML=${MOD}_${SSP}${RUN}_fixlu;
+#mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+#NML=${MOD}_${SSP}${RUN}_fixco2_2014;
+#mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+#NML=${MOD}_${SSP}${RUN}_cl;
+#mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+NML=${MOD}_${SSP}${RUN}_fixco2_1850;
+mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+done;
+done
+
+####################################################################################
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in MRI-ESM2-0 FGOALS-g3 MIROC6;
+do
+#NML=${MOD}_${SSP}${RUN};
+#mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+#NML=${MOD}_${SSP}${RUN}_fixco2;
+#mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+#NML=${MOD}_${SSP}${RUN}_fixlu;
+#mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+#NML=${MOD}_${SSP}${RUN}_fixco2_2014;
+#mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+#NML=${MOD}_${SSP}${RUN}_cl;
+#mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+NML=${MOD}_${SSP}${RUN}_fixco2_1850;
+mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+done;
+done
+
+####################################################################################
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR;
+do
+#NML=${MOD}_${SSP}${RUN};
+#mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+#NML=${MOD}_${SSP}${RUN}_fixco2;
+#mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+#NML=${MOD}_${SSP}${RUN}_fixlu;
+#mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+#NML=${MOD}_${SSP}${RUN}_fixco2_2014;
+#mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+#NML=${MOD}_${SSP}${RUN}_cl;
+#mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+NML=${MOD}_${SSP}${RUN}_fixco2_1850;
+mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+done;
+done
+
+####################################################################################
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in INM-CM4-8 INM-CM5-0 CanESM5;
+do
+#NML=${MOD}_${SSP}${RUN};
+#mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+#NML=${MOD}_${SSP}${RUN}_fixco2;
+#mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+#NML=${MOD}_${SSP}${RUN}_fixlu;
+#mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+#NML=${MOD}_${SSP}${RUN}_fixco2_2014;
+#mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+#NML=${MOD}_${SSP}${RUN}_cl;
+#mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+NML=${MOD}_${SSP}${RUN}_fixco2_1850;
+mpirun --mca pml ob1 --mca btl ^openib -np 30 src/lpj joboptions/${NML}.namelist -180/180/-90/90 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv;
+done;
+done
+

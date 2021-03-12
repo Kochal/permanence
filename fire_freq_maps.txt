@@ -1,0 +1,88 @@
+## fire frequency 10 year
+## ctl; restor_cl
+## select 1851-1880; 2006-2030; 2071-2100 burnedf
+## select grid cells with burnedf > 0
+## sum grid cells / 30
+
+cd /home/terraces/projects/LPJ_futuretropics/fire/
+
+MASK=/home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc
+
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+
+cdo -L -mul -selyear,1861/1890 -selvar,burnedf /home/akoch/terraces/datasets/dgvm_output/${MOD}_ssp126_30min_global_ctl_fire.nc $MASK burnedf_${MOD}_1861-1890.nc;
+cdo -L -mul -selyear,1971/2000 -selvar,burnedf /home/akoch/terraces/datasets/dgvm_output/${MOD}_ssp126_30min_global_ctl_fire.nc $MASK burnedf_${MOD}_1971-2000.nc;
+
+for VAR in ctl_fire restor_cl_fire restor_fire;
+do
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+
+cdo -L -mul -selyear,2001/2030 -selvar,burnedf /home/akoch/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK burnedf_${MOD}_${SSP}_${VAR}_2001-2030.nc;
+cdo -L -mul -selyear,2071/2100 -selvar,burnedf /home/akoch/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK burnedf_${MOD}_${SSP}_${VAR}_2071-2100.nc;
+
+done;
+done;
+done
+
+
+for TIME in 1861-1890 1971-2000; 
+do
+VARS=$(ls -r /home/terraces/projects/LPJ_futuretropics/fire/burnedf*_${TIME}.nc);
+cdo -L ensmean $VARS burnedf_${TIME}_ensmean.nc;
+done
+
+for VAR in ctl_fire restor_cl_fire restor_fire;
+do
+for TIME in 2001-2030 2071-2100; 
+do
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+
+VARS=$(ls /home/terraces/projects/LPJ_futuretropics/fire/burnedf_*${SSP}_${VAR}_${TIME}.nc);
+cdo ensmean $VARS burnedf_${SSP}_${VAR}_${TIME}_ensmean.nc;
+
+# Knutti R ###########################################################
+cdo merge $VARS burnedf_${SSP}_${VAR}_${TIME}_ens.nc
+/home/akoch/scripts/future_forests/Knutti_R.py burnedf_${SSP}_${VAR}_${TIME}_ens.nc burnedf burnedf_1971-2000_ensmean.nc R_burnedf_${SSP}_${VAR}_${TIME}.nc; 
+ncrename -v burnedf,R R_burnedf_${SSP}_${VAR}_${TIME}.nc
+cdo expr,'R=R>=0.8'  R_burnedf_${SSP}_${VAR}_${TIME}.nc tmp.nc 
+mv tmp.nc R_burnedf_${SSP}_${VAR}_${TIME}.nc
+########################################################################
+
+## now fire return period
+cdo -L -div -expr,'burnedf=burnedf>0' -timmean burnedf_${SSP}_${VAR}_${TIME}_ensmean.nc -timmean burnedf_${SSP}_${VAR}_${TIME}_ensmean.nc freturn_${SSP}_${VAR}_${TIME}_ensmean.nc
+ncrename -v burnedf,freturn freturn_${SSP}_${VAR}_${TIME}_ensmean.nc;
+
+ncap2 -O -s "where(freturn>500) freturn=500" freturn_${SSP}_${VAR}_${TIME}_ensmean.nc freturn_${SSP}_${VAR}_${TIME}_ensmean.nc;
+
+rm burnedf_${SSP}_${VAR}_${TIME}_ens.nc
+done;
+done;
+done
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+rm burnedf_${MOD}*
+done
+
+for TIME in 1861-1890 1971-2000;
+do
+cdo -L -div -expr,'burnedf=burnedf>0' -timmean burnedf_${TIME}_ensmean.nc -timmean burnedf_${TIME}_ensmean.nc freturn_${TIME}_ensmean.nc
+ncrename -v burnedf,freturn freturn_${TIME}_ensmean.nc
+ncap2 -O -s "where(freturn>500) freturn=500" freturn_${TIME}_ensmean.nc freturn_${TIME}_ensmean.nc
+done
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for VAR in ctl_fire restor_fire;
+do
+cdo sub freturn_${SSP}_${VAR}_2071-2100_ensmean.nc freturn_${SSP}_${VAR}_2001-2030_ensmean.nc freturn_${SSP}_${VAR}_future-present_ensmean.nc
+done;
+cdo sub freturn_${SSP}_restor_fire_2071-2100_ensmean.nc freturn_${SSP}_ctl_fire_2071-2100_ensmean.nc freturn_${SSP}_restor-ctl_2071-2100_ensmean.nc
+done;
+done
+
+cdo sub freturn_1971-2000_ensmean.nc freturn_1861-1890_ensmean.nc freturn_diff_1970-1860_ensmean.nc 

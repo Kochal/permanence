@@ -1,0 +1,36 @@
+TARGET=/home/akoch/terraces/datasets/climategenerator_data/CMIP6_permanence/spinup/
+codedir=/home/akoch/LPJ/climategenerator/tools
+coeffile=$codedir/wetVpre_cruts400.nc  #pre2wet_coeffs_rotated.nc
+
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+cdo mulc,86400 ${TARGET}/${MOD}/rawdata/climean/pr_Amon_${MOD}_185001-185912.nc ${TARGET}/${MOD}/rawdata/climean/pr_Amon_${MOD}_185001-185912_day.nc 
+mv ${TARGET}/${MOD}/rawdata/climean/pr_Amon_${MOD}_185001-185912_day.nc ${TARGET}/${MOD}/rawdata/climean/pr_Amon_${MOD}_185001-185912.nc
+cdo muldpm ${TARGET}/${MOD}/rawdata/climean/pr_Amon_${MOD}_185001-185912.nc ${TARGET}/${MOD}/rawdata/climean/preacc_Amon_${MOD}_185001-185912.nc
+ncrename -v pr,preacc ${TARGET}/${MOD}/rawdata/climean/preacc_Amon_${MOD}_185001-185912.nc;
+done
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+cdo -f nc4 -P 8 remapbic,/home/akoch/LPJ/climategenerator/tools/grid144x90 ${TARGET}/${MOD}/rawdata/climean/preacc_Amon_${MOD}_185001-185912.nc ${TARGET}/${MOD}/rawdata/climean/preacc_144x90_Amon_${MOD}_185001-185912.nc;
+done
+# regridding is necessary because of error NetCDF: Start+count exceeds dimension bound
+# but causes files to lose their boundaries so they need to be recreated
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+ncap2 -O -s 'defdim("bnds",2);lat_bnds=make_bounds(lat,$bnds); lon_bnds=make_bounds(lon,$bnds);time_bnds=make_bounds(time,$bnds);' ${TARGET}/${MOD}/rawdata/climean/preacc_144x90_Amon_${MOD}_185001-185912.nc ${TARGET}/${MOD}/rawdata/climean/preacc_144x90_Amon_${MOD}_185001-185912.nc;
+done
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+ncgen -k nc4 -o ${TARGET}/${MOD}/rawdata/climean/wetdays_Amon_${MOD}_185001-185912.nc /home/akoch/LPJ/climategenerator/tools/wetdays.cdl
+done
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+$codedir/calcwetdays ${TARGET}/${MOD}/rawdata/climean/preacc_144x90_Amon_${MOD}_185001-185912.nc $coeffile ${TARGET}/${MOD}/rawdata/climean/wetdays_Amon_${MOD}_185001-185912.nc;
+echo ${TARGET}/${MOD}/rawdata/climean/wetdays_Amon_${MOD}_185001-185912.nc;
+done
+

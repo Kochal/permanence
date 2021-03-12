@@ -1,0 +1,54 @@
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+cdo -L mul -sub -selyear,1850/2100 -selvar,NBP /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl_fixlu.nc -selyear,1850/2100 -selvar,NBP /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl.nc /home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}_fixlu.nc;
+
+cdo -L mul -sub -selyear,1850/2100 -selvar,NBP /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl_fixco2.nc -selyear,1850/2100 -selvar,NBP /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl.nc /home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}_fixco2.nc;
+
+cdo -L mul -sub -selyear,1850/2100 -selvar,NBP /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl_fixco2_2014.nc -selyear,1850/2100 -selvar,NBP /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl.nc /home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}__fixco2_2014.nc;
+
+cdo -L mul -selyear,1850/2100 -selvar,NBP /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl.nc /home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}_all.nc;
+
+cdo -L mul -sub -selyear,1850/2100 -selvar,NBP /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl.nc -sub -selyear,1850/2100 -selvar,NBP /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl_fixlu.nc -selvar,NBP /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl_fixco2.nc /home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}_climate.nc;
+
+## create timeseries
+cdo -selyear,1850 /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}_fixlu.nc /home/terraces/projects/LPJ_futuretropics/nbp/tmp.nc;
+cdo -L mulc,-1 -fldsum -mul -sub /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}_fixlu.nc /home/terraces/projects/LPJ_futuretropics/nbp/tmp.nc -gridarea /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}_fixlu.nc /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}_fixlu_ts.nc;
+
+cdo -selyear,1850 /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}_fixco2.nc /home/terraces/projects/LPJ_futuretropics/nbp/tmp.nc;
+cdo -L mulc,-1 -fldsum -mul -sub /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}_fixco2.nc /home/terraces/projects/LPJ_futuretropics/nbp/tmp.nc -gridarea /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}_fixco2.nc /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}_fixco2_ts.nc;
+
+cdo -selyear,1850 /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}__fixco2_2014.nc /home/terraces/projects/LPJ_futuretropics/nbp/tmp.nc;
+cdo -L mulc,-1 -fldsum -mul -sub /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}__fixco2_2014.nc /home/terraces/projects/LPJ_futuretropics/nbp/tmp.nc -gridarea /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}__fixco2_2014.nc /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}_fixco2_2014_ts.nc;
+
+cdo -selyear,1850 /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}_climate.nc /home/terraces/projects/LPJ_futuretropics/nbp/tmp.nc;
+cdo -L mulc,-1 -fldsum -mul -sub /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}_climate.nc /home/terraces/projects/LPJ_futuretropics/nbp/tmp.nc -gridarea /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}_climate.nc /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}_climate_ts.nc;
+
+cdo -selyear,1850 /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}_all.nc /home/terraces/projects/LPJ_futuretropics/nbp/tmp.nc;
+cdo -L mulc,-1 -fldsum -mul -sub /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}_all.nc /home/terraces/projects/LPJ_futuretropics/nbp/tmp.nc -gridarea /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}_all.nc /home/terraces/projects/LPJ_futuretropics/nbp/${MOD}_${SSP}_all_ts.nc;
+
+done;
+## create ensemble
+
+for VAR in all fixco2_2014 fixco2 fixlu climate; # ;
+do
+VARS=$(ls /home/terraces/projects/LPJ_futuretropics/nbp/*_${SSP}_${VAR}_ts.nc);
+cdo ensmean $VARS ${VAR}_${SSP}_ensmean.nc;
+ncrename -v NBP,mean ${VAR}_${SSP}_ensmean.nc;
+cdo ensstd $VARS ${VAR}_${SSP}_ensstd.nc;
+ncrename -v NBP,std ${VAR}_${SSP}_ensstd.nc;
+ncks -A -v std ${VAR}_${SSP}_ensstd.nc ${VAR}_${SSP}_ensmean.nc
+ncatted -O -a title,global,m,c,"Anomalies w.r.t. 1850" ${VAR}_${SSP}_ensmean.nc
+mv ${VAR}_${SSP}_ensmean.nc nbp_${VAR}_${SSP}_ensmean.nc
+done;
+done
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for VAR in all climate fixco2_2014 fixco2 fixlu;
+do
+ncap2 -A -s 'conf1=mean-(1.96*(std / sqrt(13)))' nbp_${VAR}_${SSP}_ensmean.nc nbp_${VAR}_${SSP}_ensmean.nc;
+ncap2 -A -s 'conf2=mean+(1.96*(std / sqrt(13)))' nbp_${VAR}_${SSP}_ensmean.nc nbp_${VAR}_${SSP}_ensmean.nc;
+done;
+done

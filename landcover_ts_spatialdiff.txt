@@ -1,0 +1,80 @@
+## land cover change
+## time series ctl, climate only
+## maps for 2014 wr.t. 1850; 2050; 2100 + R
+
+MASK=/home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do 
+for VAR in ctl ctl_fixlu ctl_fixco2 restor;
+do
+cdo -L fldsum -mul -mul -selvar,cover /home/akoch/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc -gridarea $MASK $MASK /home/terraces/projects/LPJ_futuretropics/landcover/tmp.nc;
+cdo divc,1e11 /home/terraces/projects/LPJ_futuretropics/landcover/tmp.nc /home/terraces/projects/LPJ_futuretropics/landcover/landcover_${MOD}_${SSP}_${VAR}_ts.nc;
+
+ncatted -O -a units,cover,m,c,"Mha" /home/terraces/projects/LPJ_futuretropics/landcover/landcover_${MOD}_${SSP}_${VAR}_ts.nc;
+
+done;
+
+## climate = ctl - fixlu - fixco2
+cdo -L fldsum -mul -mul -sub -selvar,cover /home/akoch/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl.nc -sub -selvar,cover /home/akoch/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl_fixlu.nc -selvar,cover /home/akoch/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl_fixco2.nc -gridarea $MASK $MASK /home/terraces/projects/LPJ_futuretropics/landcover/tmp.nc
+cdo divc,1e11 /home/terraces/projects/LPJ_futuretropics/landcover/tmp.nc /home/terraces/projects/LPJ_futuretropics/landcover/landcover_${MOD}_${SSP}_climate_ts.nc;
+
+ncatted -O -a units,cover,m,c,"Mha" /home/terraces/projects/LPJ_futuretropics/landcover/landcover_${MOD}_${SSP}_climate_ts.nc;
+
+## spatial
+for VAR in ctl_fixco2 ctl ctl_fixlu restor;
+do
+
+cdo -L -mul -selvar,cover,height -selyear,1850,2014,2050,2100 /home/akoch/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK /home/terraces/projects/LPJ_futuretropics/landcover/landcover_${MOD}_${SSP}_${VAR}_spatial.nc;
+
+done
+
+## climate = ctl - fixlu - fixco2
+cdo -L -mul -sub -selvar,cover,height -selyear,1850,2014,2050,2100 /home/akoch/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl.nc -sub -selvar,cover,height -selyear,1850,2014,2050,2100 /home/akoch/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl_fixlu.nc -selvar,cover,height -selyear,1850,2014,2050,2100 /home/akoch/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_ctl_fixco2.nc $MASK /home/terraces/projects/LPJ_futuretropics/landcover/landcover_${MOD}_${SSP}_climate_spatial.nc;
+
+for VAR in ctl_fixco2 ctl ctl_fixlu restor climate;
+do
+#cdo -L sub -selyear,2014 /home/terraces/projects/LPJ_futuretropics/landcover/landcover_${MOD}_${SSP}_${VAR}_spatial.nc -selyear,1850 /home/terraces/projects/LPJ_futuretropics/landcover/landcover_${MOD}_${SSP}_${VAR}_spatial.nc /home/terraces/projects/LPJ_futuretropics/landcover/landcover_${MOD}_${SSP}_${VAR}_spatial_2014.nc;
+
+#cdo -L sub -selyear,2050 /home/terraces/projects/LPJ_futuretropics/landcover/landcover_${MOD}_${SSP}_${VAR}_spatial.nc -selyear,2014 /home/terraces/projects/LPJ_futuretropics/landcover/landcover_${MOD}_${SSP}_${VAR}_spatial.nc /home/terraces/projects/LPJ_futuretropics/landcover/landcover_${MOD}_${SSP}_${VAR}_spatial_2050.nc;
+
+#cdo -L sub -selyear,2100 /home/terraces/projects/LPJ_futuretropics/landcover/landcover_${MOD}_${SSP}_${VAR}_spatial.nc -selyear,2014 /home/terraces/projects/LPJ_futuretropics/landcover/landcover_${MOD}_${SSP}_${VAR}_spatial.nc /home/terraces/projects/LPJ_futuretropics/landcover/landcover_${MOD}_${SSP}_${VAR}_spatial_2100.nc;
+
+##
+Rscript --vanilla /home/akoch/scripts/future_forests/biomes_tropics_only.R /home/terraces/projects/LPJ_futuretropics/landcover/landcover_${MOD}_${SSP}_${VAR}_spatial.nc /home/terraces/projects/LPJ_futuretropics/landcover/biomes_${MOD}_${SSP}_${VAR}_spatial_1850.nc 1; 
+Rscript --vanilla /home/akoch/scripts/future_forests/biomes_tropics_only.R /home/terraces/projects/LPJ_futuretropics/landcover/landcover_${MOD}_${SSP}_${VAR}_spatial.nc /home/terraces/projects/LPJ_futuretropics/landcover/biomes_${MOD}_${SSP}_${VAR}_spatial_2014.nc 2; 
+Rscript --vanilla /home/akoch/scripts/future_forests/biomes_tropics_only.R /home/terraces/projects/LPJ_futuretropics/landcover/landcover_${MOD}_${SSP}_${VAR}_spatial.nc /home/terraces/projects/LPJ_futuretropics/landcover/biomes_${MOD}_${SSP}_${VAR}_spatial_2050.nc 3; 
+Rscript --vanilla /home/akoch/scripts/future_forests/biomes_tropics_only.R /home/terraces/projects/LPJ_futuretropics/landcover/landcover_${MOD}_${SSP}_${VAR}_spatial.nc /home/terraces/projects/LPJ_futuretropics/landcover/biomes_${MOD}_${SSP}_${VAR}_spatial_2100.nc 4; 
+done
+
+done;
+done
+
+## /home/akoch/scripts/future_forests/uncertainty.R
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+
+VARS=$(ls /home/terraces/projects/LPJ_futuretropics/landcover/landcover_*_${SSP}_${VAR}_spatial.nc);
+cdo ensmean $VARS landcover_${SSP}_${VAR}_ensmean.nc;
+
+Rscript --vanilla /home/akoch/scripts/future_forests/biomes_tropics_only.R landcover_${SSP}_${VAR}_ensmean.nc biomes_${SSP}_${VAR}_ensmean_1850.nc 1; 
+Rscript --vanilla /home/akoch/scripts/future_forests/biomes_tropics_only.R landcover_${SSP}_${VAR}_ensmean.nc biomes_${SSP}_${VAR}_ensmean_2014.nc 2; 
+Rscript --vanilla /home/akoch/scripts/future_forests/biomes_tropics_only.R landcover_${SSP}_${VAR}_ensmean.nc biomes_${SSP}_${VAR}_ensmean_2050.nc 3; 
+Rscript --vanilla /home/akoch/scripts/future_forests/biomes_tropics_only.R landcover_${SSP}_${VAR}_ensmean.nc biomes_${SSP}_${VAR}_ensmean_2100.nc 4;
+
+done;
+done
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do 
+for VAR in ctl ctl_fixlu ctl_fixco2 restor;
+do
+for TIME in 1850 2014 2050 2100;
+do
+cdo -L -mul /home/terraces/projects/LPJ_futuretropics/landcover/biomes_${SSP}_${VAR}_ensmean_${TIME}.nc -expr,'n_models=n_models==1' /home/terraces/projects/LPJ_futuretropics/landcover/biome_agreement_${SSP}_${VAR}_${TIME}.nc /home/terraces/projects/LPJ_futuretropics/landcover/biomes_${SSP}_${VAR}_ensmean_${TIME}_hc.nc;
+done;
+done;
+done

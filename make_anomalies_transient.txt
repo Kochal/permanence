@@ -1,0 +1,15 @@
+TARGET=/home/akoch/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/
+CLIM=/home/akoch/terraces/datasets/climategenerator_data/climatology_1971-2000/cmip6/
+RUN=control
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+for VAR in clt lightning preacc sfcWind tas dtr wetdays;
+do
+cdo sub ${TARGET}/${RUN}/${SSP}/${MOD}/rawdata/${VAR}_Amon_${MOD}_185001-210012.nc ${CLIM}/${MOD}/${VAR}_Amon_${MOD}_197101-200012.nc ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/nativeres/${VAR}_Amon_${MOD}_185001-210012.nc; 
+echo ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/nativeres/${VAR}_Amon_${MOD}_185001-210012.nc;
+done;
+done;
+done

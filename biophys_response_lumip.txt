@@ -1,0 +1,9 @@
+# Temperature response to reforestation
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-LR ;
+do
+cdo -L -fldmean -timmean -sellonlatbox,0,360,-23,23 -mul -expr,"cVeg=cVeg>5" -sub -selyear,2091/2100 /home/akoch/terraces/datasets/CMIP6/lumip/ssp370-ssp126Lu/Lmon/cVeg/cVeg_Lmon_${MOD}_ssp370-ssp126Lu_r1i1p1f1_*_201501-210012.nc -selyear,2091/2100 /home/akoch/terraces/datasets/CMIP6/scenarioMIP/ssp370/Lmon/cVeg/cVeg_Lmon_${MOD}_ssp370_r1i1p1f1_*_201501-210012.nc -sub -selyear,2091/2100 /home/akoch/terraces/datasets/CMIP6/lumip/ssp370-ssp126Lu/Amon/tas/tas_Amon_${MOD}_ssp370-ssp126Lu_r1i1p1f1_*_201501-210012.nc -selyear,2091/2100 /home/akoch/terraces/datasets/CMIP6/scenarioMIP/ssp370/Amon/tas/tas_Amon_${MOD}_ssp370_r1i1p1f1_*_201501-210012.nc /home/akoch/data/future_forests/tasdiff_${MOD}.nc
+done
+
+VAR=NorESM2-LM
+cdo -L -fldmean -timmean -sellonlatbox,0,360,-23,23 -mul -expr,"cVeg=cVeg>5" -sub -selyear,2091/2100 /home/akoch/terraces/datasets/CMIP6/lumip/ssp370-ssp126Lu/Lmon/cVeg/cVeg_Lmon_${MOD}_ssp370-ssp126Lu_r1i1p1f1_*_201501-210012.nc -selyear,2091/2100 /home/akoch/terraces/datasets/CMIP6/scenarioMIP/ssp370/Lmon/cVeg/cVeg_Lmon_${MOD}_ssp370_r1i1p1f1_*_201501-210012.nc -sub -selyear,2091/2100 /home/akoch/terraces/datasets/CMIP6/lumip/ssp370-ssp126Lu/Amon/tas/tas_Amon_${MOD}_ssp370-ssp126Lu_r1i1p1f1_*_201501-210012.nc -selyear,2091/2100 /home/akoch/terraces/datasets/CMIP6/scenarioMIP/ssp370/Amon/tas/tas_Amon_${MOD}_ssp370_r1i1p1f1_*_201501-210012.nc /home/akoch/data/future_forests/tasdiff_${MOD}.nc
+

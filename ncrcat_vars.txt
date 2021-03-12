@@ -1,0 +1,64 @@
+rm */*/*/*210101-230012.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do 
+for VAR in clt mc pr sfcWind tas tasmax tasmin;
+do
+cd /home/akoch/terraces/datasets/CMIP6/scenarioMIP/${SSP}/Amon/${VAR}/;
+for MOD in MPI-ESM1-2-HR FGOALS-g3 AWI-CM-1-1-MR NorESM2-LM;
+do
+ncrcat -O *${MOD}* ${VAR}_Amon_${MOD}_${SSP}_r1i1p1f1_gn_201501-210012.nc;
+done;
+ncrcat -O *EC-Earth3-Veg* ${VAR}_Amon_EC-Earth3-Veg_${SSP}_r1i1p1f1_gr_201501-210012.nc;
+echo ${VAR};
+done;
+done
+
+########################################################################3
+for VAR in clt mc pr sfcWind tas tasmax tasmin;
+do
+cd /home/akoch/terraces/datasets/CMIP6/historical/Amon/${VAR}/;
+for MOD in MPI-ESM1-2-HR FGOALS-g3 AWI-CM-1-1-MR NorESM2-LM;
+do
+ncrcat -O *${MOD}* ${VAR}_Amon_${MOD}_historical_r1i1p1f1_gn_185001-201412.nc;
+done;
+ncrcat -O *EC-Earth3-Veg* ${VAR}_Amon_EC-Earth3-Veg_historical_r1i1p1f1_gr_185001-201412.nc;
+echo ${VAR};
+done
+
+for VAR in clt pr sfcWind tas tasmax tasmin;
+do
+cd /home/akoch/terraces/datasets/CMIP6/historical/Amon/${VAR}/;
+for MOD in GFDL-ESM4 INM-CM4-8 INM-CM5-0;
+do
+ncrcat -O *${MOD}* ${VAR}_Amon_${MOD}_historical_r1i1p1f1_gr1_185001-201412.nc;
+done;
+echo ${VAR};
+done
+
+#########################################################################
+
+for MOD in BCC-CSM2-MR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6;
+do
+ncks -d lev,0.44,0.44 ${TARGET}/${MOD}/rawdata/mc_Amon_${MOD}_185001-185912.nc ${TARGET}/${MOD}/rawdata/mc_lvl_Amon_${MOD}_185001-185912.nc;
+echo ${TARGET}/${MOD}/rawdata/mc_lvl_Amon_${MOD}_185001-185912.nc;
+done
+
+###################################################################
+
+for SSP in ssp126 ssp245 ssp370 ssp585;  
+do
+for MOD in MPI-ESM1-2-HR FGOALS-g3 AWI-CM-1-1-MR NorESM2-LM; 
+do ncrcat -O /home/akoch/terraces/datasets/CMIP6/scenarioMIP/${SSP}/Amon/prc/*${MOD}* /home/akoch/terraces/datasets/CMIP6/scenarioMIP/${SSP}/Amon/prc/prc_Amon_${MOD}_${SSP}_r1i1p1f1_gn_201501-210012.nc; 
+done; 
+
+for MOD in INM-CM4-8 INM-CM5-0;
+do 
+ncrcat -O /home/akoch/terraces/datasets/CMIP6/scenarioMIP/${SSP}/Amon/prc/*${MOD}* /home/akoch/terraces/datasets/CMIP6/scenarioMIP/${SSP}/Amon/prc/prc_Amon_${MOD}_${SSP}_r1i1p1f1_gr1_201501-210012.nc; 
+done; 
+
+ncrcat -O /home/akoch/terraces/datasets/CMIP6/scenarioMIP/${SSP}/Amon/prc/*EC-Earth3-Veg* /home/akoch/terraces/datasets/CMIP6/scenarioMIP/${SSP}/Amon/prc/prc_Amon_EC-Earth3-Veg_${SSP}_r1i1p1f1_gr_201501-210012.nc;
+done
+
+
+

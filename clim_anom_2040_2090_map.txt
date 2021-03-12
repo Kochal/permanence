@@ -1,0 +1,65 @@
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+cd /home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/control/${SSP}/${MOD}/anomalies_1971-2000/30m/;
+
+for VAR in sfcWind wetdays dtr tas;
+do
+
+cdo -L timmean -mul -selyear,2040/2049 ${VAR}_${MOD}_anomaly.nc /home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc ${VAR}_${MOD}_2040s_mean.nc;
+cdo -L timmean -mul -selyear,2090/2099 ${VAR}_${MOD}_anomaly.nc /home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc ${VAR}_${MOD}_2090s_mean.nc;
+
+done;
+
+for VAR in clt lightning;
+do 
+cdo remapbil,global_0.5 /home/terraces/datasets/climategenerator_data/climatology_1971-2000/cmip6/${MOD}/${VAR}_Amon_${MOD}_197101-200012.nc maptmp.nc;
+
+cdo -L mulc,100 -timmean -mul -div -selyear,2040/2049 ${VAR}_${MOD}_anomaly.nc maptmp.nc /home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc ${VAR}_${MOD}_2040s_mean.nc;
+cdo -L mulc,100 -timmean -mul -div -selyear,2090/2099 ${VAR}_${MOD}_anomaly.nc maptmp.nc /home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc ${VAR}_${MOD}_2090s_mean.nc;
+
+ncatted -O -a units,$VAR,m,c,"percent change w.r.t. 1971-2000" ${VAR}_${MOD}_2040s_mean.nc;
+ncatted -O -a units,$VAR,m,c,"percent change w.r.t. 1971-2000" ${VAR}_${MOD}_2090s_mean.nc;
+rm maptmp.nc;
+
+done;
+
+VAR=preacc
+cdo timsum /home/terraces/datasets/climategenerator_data/climatology_1971-2000/cmip6/${MOD}/${VAR}_Amon_${MOD}_197101-200012.nc tmp.nc
+cdo remapbil,global_0.5 tmp.nc maptmp.nc;
+
+cdo -L mulc,100 -mul -div -timsum -ymonmean -selyear,2040/2049 ${VAR}_${MOD}_anomaly.nc maptmp.nc /home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc ${VAR}_${MOD}_2040s_mean.nc;
+cdo -L mulc,100 -mul -div -timsum -ymonmean -selyear,2090/2099 ${VAR}_${MOD}_anomaly.nc maptmp.nc /home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc ${VAR}_${MOD}_2090s_mean.nc;
+
+ncatted -O -a units,$VAR,m,c,"percent change w.r.t. 1971-2000" ${VAR}_${MOD}_2040s_mean.nc;
+ncatted -O -a units,$VAR,m,c,"percent change w.r.t. 1971-2000" ${VAR}_${MOD}_2090s_mean.nc;
+done;
+done
+
+cd ~/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/control/
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for VAR in sfcWind wetdays dtr tas clt lightning preacc;
+do
+VARS=$(ls ${SSP}/*/anomalies_1971-2000/30m/${VAR}_*_2040s_mean.nc);
+cdo ensmean $VARS ~/terraces/projects/LPJ_futuretropics/for_Katie/${VAR}_${SSP}_spatial_2040s.nc;
+ncatted -O -a title,global,m,c,"Anomalies w.r.t. 1971-2000" ~/terraces/projects/LPJ_futuretropics/for_Katie/terr${VAR}_${SSP}_spatial_2040s.nc
+
+VARS=$(ls ${SSP}/*/anomalies_1971-2000/30m/${VAR}_*_2090s_mean.nc);
+cdo ensmean $VARS ~/terraces/projects/LPJ_futuretropics/for_Katie/${VAR}_${SSP}_spatial_2090s.nc;
+ncatted -O -a title,global,m,c,"Anomalies w.r.t. 1971-2000" ~/terraces/projects/LPJ_futuretropics/for_Katie/${VAR}_${SSP}_spatial_2090s.nc
+done;
+done
+
+#########################################################################
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for VAR in sfcWind wetdays dtr tas clt lightning preacc;
+do
+for YEAR in 2040 2090;
+do
+gdal_polygonize.py R_${VAR}_${SSP}_ens_${YEAR}s.nc R_${VAR}_${SSP}_ens_${YEAR}s.shp
+done;
+done;
+done

@@ -1,0 +1,40 @@
+cd /home/terraces/projects/LPJ_futuretropics/restorgains/
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+for VAR in ctl_fire restor_fire restor_cl_fire;
+do
+# decadal means for 2020s
+cdo timmean -mul -selyear,2020/2029 -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc /home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc ${VAR}_2020.nc;
+
+# decadal means for 2040s
+cdo timmean -mul -selyear,2040/2049 -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc /home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc ${VAR}_2040.nc;
+
+# decadal means for 2090s
+cdo timmean -mul -selyear,2090/2099 -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc /home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc ${VAR}_2090.nc;
+done;
+
+# difference restor - ctl w.r.t. 2020s = increase/decline in biomass due to climate and climate+fire
+#cdo -L fldsum -mul -sub -sub restor_2040.nc restor_2020.nc -sub ctl_2040.nc ctl_2020.nc -gridarea ctl_2020.nc restorgains_nf_${MOD}_${SSP}_2040s.nc;
+#cdo -L fldsum -mul -sub -sub restor_2090.nc restor_2020.nc -sub ctl_2090.nc ctl_2020.nc -gridarea ${VAR}_2020.nc restorgains_nf_${MOD}_${SSP}_2090s.nc;
+
+cdo -L fldsum -mul -sub -sub restor_fire_2040.nc restor_fire_2020.nc -sub ctl_fire_2040.nc ctl_fire_2020.nc -gridarea ctl_fire_2020.nc restorgains_fire_${MOD}_${SSP}_2040s.nc;
+cdo -L fldsum -mul -sub -sub restor_fire_2090.nc restor_fire_2020.nc -sub ctl_fire_2090.nc ctl_fire_2020.nc -gridarea ctl_fire_2020.nc restorgains_fire_${MOD}_${SSP}_2090s.nc;
+
+cdo -L fldsum -mul -sub -sub restor_cl_fire_2040.nc restor_cl_fire_2020.nc -sub ctl_fire_2040.nc ctl_fire_2020.nc -gridarea ctl_fire_2020.nc restorgains_cl_fire_${MOD}_${SSP}_2040s.nc;
+cdo -L fldsum -mul -sub -sub restor_cl_fire_2090.nc restor_cl_fire_2020.nc -sub ctl_fire_2090.nc ctl_fire_2020.nc -gridarea ctl_fire_2020.nc restorgains_cl_fire_${MOD}_${SSP}_2090s.nc;
+done;
+
+#cdo merge restorgains_nf_*_${SSP}_2040s.nc restorgains_nf_ens_${SSP}_2040s.nc; 
+#cdo merge restorgains_nf_*_${SSP}_2090s.nc restorgains_nf_ens_${SSP}_2090s.nc;
+
+cdo merge restorgains_fire_*_${SSP}_2040s.nc restorgains_fire_ens_${SSP}_2040s.nc; 
+cdo merge restorgains_fire_*_${SSP}_2090s.nc restorgains_fire_ens_${SSP}_2090s.nc;
+
+cdo merge restorgains_cl_fire_*_${SSP}_2040s.nc restorgains_cl_fire_ens_${SSP}_2040s.nc; 
+cdo merge restorgains_cl_fire_*_${SSP}_2090s.nc restorgains_cl_fire_ens_${SSP}_2090s.nc;
+done;
+
+rm ctl_*.nc; rm restor_*.nc

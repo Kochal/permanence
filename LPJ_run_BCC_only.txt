@@ -1,0 +1,81 @@
+cd LPJ/LPJ-LMfire-future/
+module purge; module load netCDF-Fortran/4.5.3-gompi-2020a
+
+## C2 ########################################################################
+## CONTROL RUN
+cd LPJ/LPJ-LMfire-future/
+module purge; module load netCDF-Fortran/4.5.3-gompi-2020a
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in BCC-CSM2-MR 
+do
+RUN=_30min_global_ctl
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 31 src/lpj joboptions/${NML}.namelist -125/180/-37/37 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv >> ${NML}_fire;
+
+RUN=_30min_global_ctl_fixco2_2014
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 31 src/lpj joboptions/${NML}.namelist -125/180/-37/37 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv >> ${NML}_fire;
+
+RUN=_30min_global_ctl_fixco2_1850
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 31 src/lpj joboptions/${NML}.namelist -125/180/-37/37 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv >> ${NML}_fire;
+done
+done
+
+## C3 ########################################################################
+## RESTORATION RUN
+cd LPJ/LPJ-LMfire-future/
+module purge; module load netCDF-Fortran/4.5.3-gompi-2020a
+for MOD in BCC-CSM2-MR;
+do
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+RUN=_30min_global_restor
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 31 src/lpj joboptions/${NML}.namelist -125/180/-37/37 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv >> ${NML}_fire;
+
+RUN=_30min_global_restor_fixco2_2014
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 31 src/lpj joboptions/${NML}.namelist -125/180/-37/37 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv >> ${NML}_fire;
+
+RUN=_30min_global_restor_fixco2_1850
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 31 src/lpj joboptions/${NML}.namelist -125/180/-37/37 /home/terraces/datasets/dgvm_output/${NML}_fire.nc pftpars_global.csv >> ${NML}_fire;
+done
+done
+
+
+## C4 ########################################################################
+## CONTROL RUN (2014 CLIMATE)
+cd LPJ/LPJ-LMfire-future/
+module purge; module load netCDF-Fortran/4.5.3-gompi-2020a
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in BCC-CSM2-MR;
+do
+RUN=_30min_global_restor
+NML=${MOD}_${SSP}${RUN};
+mpirun --mca pml ob1 --mca btl ^openib -np 31 ../LPJ-LMfire-nofire/src/lpj joboptions/${NML}.namelist -125/180/-37/37 /home/terraces/datasets/dgvm_output/${NML}.nc pftpars_global.csv >> ${NML};
+
+done
+done
+
+
+## RESTOR CLIMATE ADJUSTED
+cd LPJ/LPJ-LMfire-future/
+module purge; module load netCDF-Fortran/4.5.3-gompi-2020a
+for MOD in BCC-CSM2-MR;
+do
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+RUN=_30min_global_restor
+NML=${MOD}_${SSP}${RUN}_cl;
+mpirun --mca pml ob1 --mca btl ^openib -np 31 src/lpj joboptions/${NML}.namelist -125/180/-37/37 /home/terraces/datasets/dgvm_output/${NML}.nc pftpars_global.csv;
+done
+done
+
+## NEXT BATCH TUESDAY, 23/02 4AM 
+
+
+

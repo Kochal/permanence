@@ -1,0 +1,147 @@
+## create timeseries
+MASK=/home/terraces/projects/LPJ_futuretropics/afforestation_mask_tropics_global.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+#cd /home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/control/${SSP}/${MOD}/anomalies_1971-2000/30m/;
+
+for VAR in sfcWind dtr tas;
+do
+OUTFILE=/home/terraces/projects/LPJ_futuretropics/climate/${VAR}_${MOD}_${SSP}_ts.nc;
+ANOM=/home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/control/${SSP}/${MOD}/anomalies_1971-2000/30m/${VAR}_${MOD}_anomaly.nc;
+cdo -L fldmean -yearmean -mul $ANOM $MASK $OUTFILE;
+done;
+
+## percent change for other vars
+for VAR in clt wetdays sfcWind;
+do 
+OUTFILE=/home/terraces/projects/LPJ_futuretropics/climate/${VAR}_${MOD}_${SSP}_ts.nc;
+CLIM=/home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/control/${SSP}/${MOD}/rawdata/${VAR}_Amon_${MOD}_185001-210012.nc;
+
+cdo -L remapbil,global_0.5 -yearmean $CLIM tmp_05.nc
+cdo -L -fldmean -mul tmp_05.nc $MASK tmp.nc
+cdo -L -timmean -selyear,1971/2000 tmp.nc tmp2.nc
+cdo -L -mulc,100 -div -sub tmp.nc tmp2.nc tmp2.nc $OUTFILE
+
+rm tmp.nc; rm tmp2.nc; rm tmp_05.nc
+done;
+
+######
+for VAR in lightning preacc;
+do
+OUTFILE=/home/terraces/projects/LPJ_futuretropics/climate/${VAR}_${MOD}_${SSP}_ts.nc;
+CLIM=/home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/control/${SSP}/${MOD}/rawdata/${VAR}_Amon_${MOD}_185001-210012.nc;
+
+cdo -L remapbil,global_0.5 -yearmean $CLIM tmp_05.nc
+cdo -L -fldsum -mul -mul tmp_05.nc -gridarea $MASK $MASK tmp.nc
+cdo -L -timmean -selyear,1971/2000 tmp.nc tmp2.nc
+cdo -L -mulc,100 -div -sub tmp.nc tmp2.nc tmp2.nc $OUTFILE
+rm tmp.nc; rm tmp2.nc; rm tmp_05.nc
+done;
+done
+
+OUTDIR=/home/terraces/projects/LPJ_futuretropics/for_Katie/
+## combine each model as ensemble
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+VAR1=dtr
+
+VARS=$(ls /home/terraces/projects/LPJ_futuretropics/climate/${VAR1}_*_${SSP}_ts.nc);
+cdo ensmean $VARS ${OUTDIR}/${VAR1}_${SSP}_ensmean.nc;
+ncrename -v dtr,mean ${OUTDIR}/${VAR1}_${SSP}_ensmean.nc;
+cdo enspctl,25 $VARS ${OUTDIR}/${VAR1}_${SSP}_enspctl25.nc;
+ncrename -v dtr,pctl25 ${OUTDIR}/${VAR1}_${SSP}_enspctl25.nc;
+cdo enspctl,50 $VARS ${OUTDIR}/${VAR1}_${SSP}_enspctl50.nc;
+ncrename -v dtr,median ${OUTDIR}/${VAR1}_${SSP}_enspctl50.nc;
+cdo enspctl,75 $VARS ${OUTDIR}/${VAR1}_${SSP}_enspctl75.nc;
+ncrename -v dtr,pctl75 ${OUTDIR}/${VAR1}_${SSP}_enspctl75.nc;
+cdo merge ${OUTDIR}${VAR1}_${SSP}_ens* ${OUTDIR}/${VAR1}_${SSP}_ts.nc
+ncatted -O -a units,$VAR1,m,c,"percent change w.r.t. 1971-2000" $OUTFILE;
+
+VAR1=tas
+
+VARS=$(ls /home/terraces/projects/LPJ_futuretropics/climate/${VAR1}_*_${SSP}_ts.nc);
+cdo ensmean $VARS ${OUTDIR}/${VAR1}_${SSP}_ensmean.nc;
+ncrename -v tas,mean ${OUTDIR}/${VAR1}_${SSP}_ensmean.nc;
+cdo enspctl,25 $VARS ${OUTDIR}/${VAR1}_${SSP}_enspctl25.nc;
+ncrename -v tas,pctl25 ${OUTDIR}/${VAR1}_${SSP}_enspctl25.nc;
+cdo enspctl,50 $VARS ${OUTDIR}/${VAR1}_${SSP}_enspctl50.nc;
+ncrename -v tas,median ${OUTDIR}/${VAR1}_${SSP}_enspctl50.nc;
+cdo enspctl,75 $VARS ${OUTDIR}/${VAR1}_${SSP}_enspctl75.nc;
+ncrename -v tas,pctl75 ${OUTDIR}/${VAR1}_${SSP}_enspctl75.nc;
+cdo merge ${OUTDIR}${VAR1}_${SSP}_ens* ${OUTDIR}/${VAR1}_${SSP}_ts.nc
+ncatted -O -a units,$VAR1,m,c,"percent change w.r.t. 1971-2000" $OUTFILE;
+
+VAR1=clt
+
+VARS=$(ls /home/terraces/projects/LPJ_futuretropics/climate/${VAR1}_*_${SSP}_ts.nc);
+cdo ensmean $VARS ${OUTDIR}/${VAR1}_${SSP}_ensmean.nc;
+ncrename -v clt,mean ${OUTDIR}/${VAR1}_${SSP}_ensmean.nc;
+cdo enspctl,25 $VARS ${OUTDIR}/${VAR1}_${SSP}_enspctl25.nc;
+ncrename -v clt,pctl25 ${OUTDIR}/${VAR1}_${SSP}_enspctl25.nc;
+cdo enspctl,50 $VARS ${OUTDIR}/${VAR1}_${SSP}_enspctl50.nc;
+ncrename -v clt,median ${OUTDIR}/${VAR1}_${SSP}_enspctl50.nc;
+cdo enspctl,75 $VARS ${OUTDIR}/${VAR1}_${SSP}_enspctl75.nc;
+ncrename -v clt,pctl75 ${OUTDIR}/${VAR1}_${SSP}_enspctl75.nc;
+cdo merge ${OUTDIR}${VAR1}_${SSP}_ens* ${OUTDIR}/${VAR1}_${SSP}_ts.nc
+ncatted -O -a units,$VAR1,m,c,"percent change w.r.t. 1971-2000" $OUTFILE;
+
+VAR1=wetdays
+
+VARS=$(ls /home/terraces/projects/LPJ_futuretropics/climate/${VAR1}_*_${SSP}_ts.nc);
+cdo ensmean $VARS ${OUTDIR}/${VAR1}_${SSP}_ensmean.nc;
+ncrename -v wetdays,mean ${OUTDIR}/${VAR1}_${SSP}_ensmean.nc;
+cdo enspctl,25 $VARS ${OUTDIR}/${VAR1}_${SSP}_enspctl25.nc;
+ncrename -v wetdays,pctl25 ${OUTDIR}/${VAR1}_${SSP}_enspctl25.nc;
+cdo enspctl,50 $VARS ${OUTDIR}/${VAR1}_${SSP}_enspctl50.nc;
+ncrename -v wetdays,median ${OUTDIR}/${VAR1}_${SSP}_enspctl50.nc;
+cdo enspctl,75 $VARS ${OUTDIR}/${VAR1}_${SSP}_enspctl75.nc;
+ncrename -v wetdays,pctl75 ${OUTDIR}/${VAR1}_${SSP}_enspctl75.nc;
+cdo merge ${OUTDIR}${VAR1}_${SSP}_ens* ${OUTDIR}/${VAR1}_${SSP}_ts.nc
+ncatted -O -a units,$VAR1,m,c,"percent change w.r.t. 1971-2000" $OUTFILE;
+
+VAR1=sfcWind
+
+VARS=$(ls /home/terraces/projects/LPJ_futuretropics/climate/${VAR1}_*_${SSP}_ts.nc);
+cdo ensmean $VARS ${OUTDIR}/${VAR1}_${SSP}_ensmean.nc;
+ncrename -v ${VAR1},mean ${OUTDIR}/${VAR1}_${SSP}_ensmean.nc;
+cdo enspctl,25 $VARS ${OUTDIR}/${VAR1}_${SSP}_enspctl25.nc;
+ncrename -v ${VAR1},pctl25 ${OUTDIR}/${VAR1}_${SSP}_enspctl25.nc;
+cdo enspctl,50 $VARS ${OUTDIR}/${VAR1}_${SSP}_enspctl50.nc;
+ncrename -v ${VAR1},median ${OUTDIR}/${VAR1}_${SSP}_enspctl50.nc;
+cdo enspctl,75 $VARS ${OUTDIR}/${VAR1}_${SSP}_enspctl75.nc;
+ncrename -v ${VAR1},pctl75 ${OUTDIR}/${VAR1}_${SSP}_enspctl75.nc;
+cdo merge ${OUTDIR}${VAR1}_${SSP}_ens* ${OUTDIR}/${VAR1}_${SSP}_ts.nc
+ncatted -O -a units,$VAR1,m,c,"percent change w.r.t. 1971-2000" $OUTFILE;
+
+VAR1=preacc
+VARS=$(ls /home/terraces/projects/LPJ_futuretropics/climate/${VAR1}_*_${SSP}_ts.nc);
+cdo ensmean $VARS ${OUTDIR}/${VAR1}_${SSP}_ensmean.nc;
+ncrename -v pr,mean ${OUTDIR}/${VAR1}_${SSP}_ensmean.nc;
+cdo enspctl,25 $VARS ${OUTDIR}/${VAR1}_${SSP}_enspctl25.nc;
+ncrename -v pr,pctl25 ${OUTDIR}/${VAR1}_${SSP}_enspctl25.nc;
+cdo enspctl,50 $VARS ${OUTDIR}/${VAR1}_${SSP}_enspctl50.nc;
+ncrename -v pr,median ${OUTDIR}/${VAR1}_${SSP}_enspctl50.nc;
+cdo enspctl,75 $VARS ${OUTDIR}/${VAR1}_${SSP}_enspctl75.nc;
+ncrename -v pr,pctl75 ${OUTDIR}/${VAR1}_${SSP}_enspctl75.nc;
+cdo merge ${OUTDIR}${VAR1}_${SSP}_ens* ${OUTDIR}/${VAR1}_${SSP}_ts.nc
+ncatted -O -a units,pr,m,c,"percent change w.r.t. 1971-2000" $OUTFILE;
+
+VAR1=lightning
+VARS=$(ls /home/terraces/projects/LPJ_futuretropics/climate/${VAR1}_*_${SSP}_ts.nc);
+cdo ensmean $VARS ${OUTDIR}/${VAR1}_${SSP}_ensmean.nc;
+ncrename -v L,mean ${OUTDIR}/${VAR1}_${SSP}_ensmean.nc;
+cdo enspctl,25 $VARS ${OUTDIR}/${VAR1}_${SSP}_enspctl25.nc;
+ncrename -v L,pctl25 ${OUTDIR}/${VAR1}_${SSP}_enspctl25.nc;
+cdo enspctl,50 $VARS ${OUTDIR}/${VAR1}_${SSP}_enspctl50.nc;
+ncrename -v L,median ${OUTDIR}/${VAR1}_${SSP}_enspctl50.nc;
+cdo enspctl,75 $VARS ${OUTDIR}/${VAR1}_${SSP}_enspctl75.nc;
+ncrename -v L,pctl75 ${OUTDIR}/${VAR1}_${SSP}_enspctl75.nc;
+cdo merge ${OUTDIR}${VAR1}_${SSP}_ens* ${OUTDIR}/${VAR1}_${SSP}_ts.nc
+ncatted -O -a units,L,m,c,"percent change w.r.t. 1971-2000" $OUTFILE;
+
+ncatted -O -a title,global,m,c,"Anomalies w.r.t. 1971-2000" ${OUTDIR}/${VAR1}_${SSP}_ts.nc
+done;
+done

@@ -1,0 +1,65 @@
+MASK=/home/terraces/projects/LPJ_futuretropics/afforestation_mask_tropics.nc
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+for VAR in restor_fixco2_1850_fire restor_fixco2_2014_fire restor_fire restor ctl_fire ctl_fixco2_1850_fire ctl_fixco2_2014_fire;
+do
+cdo -L -selyear,2014/2100 -sellevel,1 -selvar,tilecarbon /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc t1carbon.nc
+cdo -L  -selyear,2014/2100 -sellevel,2 -selvar,tilecarbon /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc t2carbon.nc
+cdo -L  -selyear,2014/2100 -sellevel,3 -selvar,tilecarbon /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc t3carbon.nc
+cdo -L  -selyear,2014/2100 -sellevel,1 -selvar,coverfrac /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc t1cover.nc
+cdo -L  -selyear,2014/2100 -sellevel,2 -selvar,coverfrac /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc t2cover.nc
+cdo -L  -selyear,2014/2100 -sellevel,3 -selvar,coverfrac /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc t3cover.nc
+
+cdo -L -sub t2carbon.nc -mulc,0.4286 t2carbon.nc t2_aboveground.nc
+
+cdo -L sub t2carbon.nc t2_aboveground.nc t2_belowground.nc
+
+cdo -L -mul -mul -add -mulc,0.2 t2_aboveground.nc t2_belowground.nc t2cover.nc -gridarea $MASK t2_adjusted_totalcarbon.nc
+
+cdo -L -mul -mul t1carbon.nc t1cover.nc -gridarea $MASK t1_adjusted_totalcarbon.nc
+
+cdo -L -mul -mul t3carbon.nc t3cover.nc -gridarea $MASK t3_adjusted_totalcarbon.nc
+
+cdo -L -add t1_adjusted_totalcarbon.nc -add t2_adjusted_totalcarbon.nc t3_adjusted_totalcarbon.nc adj_totc.nc
+cdo -selyear,2014 adj_totc.nc tmp.nc
+cdo -L fldsum -mul -sub adj_totc.nc tmp.nc $MASK adj_totc_${MOD}_${SSP}_${VAR}_ts.nc
+rm adj_totc.nc ; rm tmp.nc ; rm t3cover.nc ; rm t3carbon.nc
+done
+done
+done
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for VAR in restor_fixco2_1850_fire restor_fixco2_2014_fire restor_fire ctl_fire ctl_fixco2_1850_fire ctl_fixco2_2014_fire;
+do
+VARS=$(ls /home/terraces/projects/LPJ_futuretropics/totc_restor/adj_totc_*_${SSP}_${VAR}_ts.nc);
+cdo ensmean $VARS adj_totc_${VAR}_${SSP}_ensmean.nc;
+ncrename -v tilecarbon,mean adj_totc_${VAR}_${SSP}_ensmean.nc;
+cdo ensstd $VARS adj_totc_${VAR}_${SSP}_ensstd.nc;
+ncrename -v tilecarbon,std adj_totc_${VAR}_${SSP}_ensstd.nc;
+ncks -A -v std adj_totc_${VAR}_${SSP}_ensstd.nc adj_totc_${VAR}_${SSP}_ensmean.nc;
+ncatted -O -a title,global,m,c,"Anomalies w.r.t. 2014" adj_totc_${VAR}_${SSP}_ensmean.nc;
+
+ncap2 -A -s 'conf1=mean-(1.96*(std / sqrt(13)))' adj_totc_${VAR}_${SSP}_ensmean.nc adj_totc_${VAR}_${SSP}_ensmean.nc;
+ncap2 -A -s 'conf2=mean+(1.96*(std / sqrt(13)))' adj_totc_${VAR}_${SSP}_ensmean.nc adj_totc_${VAR}_${SSP}_ensmean.nc;
+done;
+done
+
+## Calculate base for percentage change in plot
+#for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+#do
+#cdo -L -fldsum -mul -timmean -selyear,1971/2000 /home/terraces/projects/LPJ_futuretropics/totc_restor/${MOD}_ssp585_ctl_fire.nc -gridarea -timmean -selyear,1971/2000 /home/terraces/projects/LPJ_futuretropics/totc_restor/${MOD}_ssp585_ctl_fire.nc /home/terraces/projects/LPJ_futuretropics/totc_restor/${MOD}_ssp585_ctl_fire_1970.nc;
+#done
+
+#VARS=$(ls /home/terraces/projects/LPJ_futuretropics/totc_restor/*_ssp585_ctl_fire_1970.nc);
+#cdo ensmean $VARS totc_ctl_fire_ensmean_1970.nc
+#ncrename -v albiomass,mean totc_ctl_fire_ensmean_1970.nc
+#cdo ensstd $VARS totc_ctl_fire_ensstd_1970.nc
+#ncrename -v albiomass,std totc_ctl_fire_ensstd_1970.nc
+#ncks -A -v std totc_ctl_fire_ensstd_1970.nc totc_ctl_fire_ensmean_1970.nc
+#ncap2 -A -s 'conf1=mean-(1.96*(std / sqrt(13)))' totc_ctl_fire_ensmean_1970.nc totc_ctl_fire_ensmean_1970.nc
+#ncap2 -A -s 'conf2=mean+(1.96*(std / sqrt(13)))' totc_ctl_fire_ensmean_1970.nc totc_ctl_fire_ensmean_1970.nc
+
+

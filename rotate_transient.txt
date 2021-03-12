@@ -1,0 +1,17 @@
+TARGET=/home/akoch/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/
+RUN=control
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5;
+do
+for VAR in clt sfcWind tas dtr preacc;
+do
+cdo sellonlatbox,-180,180,-90,90 ${TARGET}/${RUN}/${SSP}/${MOD}/rawdata/${VAR}_Amon_${MOD}_185001-210012.nc ${TARGET}/${RUN}/${SSP}/${MOD}/rawdata/${VAR}_Amon_${MOD}_185001-210012_R.nc; 
+
+mv ${TARGET}/${RUN}/${SSP}/${MOD}/rawdata/${VAR}_Amon_${MOD}_185001-210012_R.nc ${TARGET}/${RUN}/${SSP}/${MOD}/rawdata/${VAR}_Amon_${MOD}_185001-210012.nc; 
+
+echo ${TARGET}/${RUN}/${SSP}/${MOD}/rawdata/${VAR}_Amon_${MOD}_185001-210012.nc;
+done;
+done;
+done

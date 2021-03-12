@@ -1,0 +1,38 @@
+## lightning influence on fire
+cd /home/terraces/projects/LPJ_futuretropics/lightning
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+
+MASK=/home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc
+
+# change in burnedf future-present
+cdo -L -mul -sub -timmean -selyear,2071/2100 -selvar,burnedf /home/terraces/datasets/dgvm_output/${MOD}_ssp370_no_lght.nc -timmean -selyear,2001/2030 -selvar,burnedf /home/terraces/datasets/dgvm_output/${MOD}_ssp370_no_lght.nc $MASK burnedf_${MOD}_ssp370_nl_future-present.nc
+
+cdo -L -mul -sub -timmean -selyear,2071/2100 -selvar,burnedf /home/terraces/datasets/dgvm_output/${MOD}_ssp370_30min_global_ctl_fire.nc -timmean -selyear,2001/2030 -selvar,burnedf /home/terraces/datasets/dgvm_output/${MOD}_ssp370_30min_global_ctl_fire.nc $MASK burnedf_${MOD}_ssp370_lght_future-present.nc
+
+## ratio total burnt area ssp lightning-base lightning
+cdo -L -div -fldsum -mul burnedf_${MOD}_ssp370_lght_future-present.nc -gridarea $MASK -fldsum -mul burnedf_${MOD}_ssp370_nl_future-present.nc -gridarea $MASK burnedf_${MOD}_ssp370_ssp-base.nc
+
+rm burnedf_${MOD}_ssp370_nl_future-present.nc
+rm burnedf_${MOD}_ssp370_lght_future-present.nc
+
+#############################################################################
+## calculate same for lightning
+cdo -L -mul -sub -timmean -selyear,2071/2100 -selvar,lght /home/terraces/datasets/dgvm_input/climate/${MOD}_ssp370_1850-2100_no_lght.nc -timmean -selyear,2001/2030 -selvar,lght /home/terraces/datasets/dgvm_input/climate/${MOD}_ssp370_1850-2100_no_lght.nc $MASK lght_${MOD}_ssp370_nl_future-present.nc
+
+cdo -L -mul -sub -timmean -selyear,2071/2100 -selvar,lght /home/terraces/datasets/dgvm_input/climate/${MOD}_ssp370_1850-2100_30min_global_ctl.nc -timmean -selyear,2001/2030 -selvar,lght /home/terraces/datasets/dgvm_input/climate/${MOD}_ssp370_1850-2100_30min_global_ctl.nc $MASK lght_${MOD}_ssp370_lght_future-present.nc
+
+## ratio total amount of lightning-base lightning
+cdo -L -div -fldsum -mul lght_${MOD}_ssp370_lght_future-present.nc -gridarea $MASK -fldsum -mul lght_${MOD}_ssp370_nl_future-present.nc -gridarea $MASK lght_${MOD}_ssp370_ssp-base.nc
+
+rm lght_${MOD}_ssp370_nl_future-present.nc
+rm lght_${MOD}_ssp370_lght_future-present.nc
+
+done
+
+cdo merge burnedf*ssp-base.nc burnedf_ens_ssp-base.nc
+rm burnedf*ssp370_ssp-base.nc
+
+cdo merge lght*ssp-base.nc lght_ens_ssp-base.nc
+rm lght*ssp370_ssp-base.nc

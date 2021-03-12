@@ -1,0 +1,28 @@
+TARGET=/home/akoch/terraces/datasets/climategenerator_data/CMIP6_permanence/spinup/
+
+## interpolate ########################################################
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+for VAR in clt lightning preacc sfcWind tas dtr wetdays;
+do
+cdo -f nc4 -P 8 remapbic,global_0.5 ${TARGET}/${MOD}/anomalies_1971-2000/nativeres/${VAR}_Amon_${MOD}_185001-185912.nc ${TARGET}/${MOD}/anomalies_1971-2000/30m/${VAR}_${MOD}_anomaly.nc;
+echo ${TARGET}/${MOD}/anomalies_1971-2000/30m/${VAR}_${MOD}_anomaly.nc;
+done;
+done
+
+## add the 30m lightning anomaly zeros for the zero lightning run
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+cdo mulc,0 ${TARGET}/${MOD}/anomalies_1971-2000/30m/preacc_${MOD}_anomaly.nc ${TARGET}/${MOD}/anomalies_1971-2000/30m/lightning_${MOD}_anomaly.nc;
+ncrename -v pr,L ${TARGET}/${MOD}/anomalies_1971-2000/30m/lightning_${MOD}_anomaly.nc 
+done
+
+## interpolate 5min ###################################################
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; #GFDL-ESM4
+do
+for VAR in clt lightning preacc sfcWind tas dtr wetdays;
+do
+cdo -f nc4 -P 8 remapbic,/home/akoch/LPJ/climategenerator/tools/grid4320x2160 ${TARGET}/${MOD}/anomalies_1971-2000/nativeres/${VAR}_Amon_${MOD}_185001-185912.nc ${TARGET}/${MOD}/anomalies_1971-2000/5m/${VAR}_${MOD}_anomaly.nc;
+ls ${TARGET}/${MOD}/anomalies_1971-2000/5m/${VAR}_${MOD}_anomaly.nc;
+done;
+done

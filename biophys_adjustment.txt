@@ -1,0 +1,69 @@
+## subtract restor - cntrl
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5;
+do
+cd /home/terraces/datasets/dgvm_output/;
+cdo -L sub -selyear,2020/2100 -selname,albiomass ${MOD}_${SSP}_30min_global_restor_fire.nc -selyear,2020/2100 -selname,albiomass ${MOD}_${SSP}_30min_global_ctl_fire.nc /home/akoch/data/future_forests/biophysical_scaling/lpj_diffs/tmp.nc;
+
+## only fields with >=5000gC m-2 by 2100
+cd /home/akoch/data/future_forests/biophysical_scaling/lpj_diffs/;
+cdo expr,'albiomass=albiomass>=5000' -selyear,2100 tmp.nc tmp_2100.nc;
+
+## multiply fields per year with tas
+cdo mulc,-0.00005514343 -sellonlatbox,-32,53,-90,90 tmp_2100.nc tmp_afr.nc;
+cdo mulc,-0.00003309977 -sellonlatbox,-180,-32,-90,90 tmp_2100.nc tmp_ama.nc;
+cdo mulc,-0.00003546668 -sellonlatbox,53,180,-90,90 tmp_2100.nc tmp_asa.nc;
+
+cdo mergegrid tmp_2100.nc tmp_ama.nc tmp_1.nc;
+cdo mergegrid tmp_1.nc tmp_afr.nc tmp_2.nc;
+cdo mergegrid tmp_2.nc tmp_asa.nc tmp_3.nc;
+
+cdo mul tmp.nc tmp_3.nc tmp_adj.nc;
+
+## add this on top of anomalies
+cdo -L mergetime -selyear,1850/2019 /home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/control/${SSP}/${MOD}/anomalies_1971-2000/30m/tas_${MOD}_anomaly.nc -add -selyear,2020/2100 /home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/control/${SSP}/${MOD}/anomalies_1971-2000/30m/tas_${MOD}_anomaly.nc tmp_adj.nc /home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/reforestation/${SSP}/${MOD}/anomalies_1971-2000/30m/tas_${MOD}_anomaly.nc;
+
+###############################################################################
+
+## multiply fields per year with dtr
+cdo mulc,0.00005963791 -sellonlatbox,-32,53,-90,90 tmp_2100.nc tmp_afr.nc;
+cdo mulc,0.00007251166 -sellonlatbox,-180,-32,-90,90 tmp_2100.nc tmp_ama.nc;
+cdo mulc,0.00004141207 -sellonlatbox,53,180,-90,90 tmp_2100.nc tmp_asa.nc;
+
+cdo mergegrid tmp_2100.nc tmp_ama.nc tmp_1.nc;
+cdo mergegrid tmp_1.nc tmp_afr.nc tmp_2.nc;
+cdo mergegrid tmp_2.nc tmp_asa.nc tmp_3.nc;
+
+cdo mul tmp.nc tmp_3.nc tmp_adj.nc;
+
+## add this on top of anomalies
+cdo -L mergetime -selyear,1850/2019 /home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/control/${SSP}/${MOD}/anomalies_1971-2000/30m/dtr_${MOD}_anomaly.nc -add -selyear,2020/2100 /home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/control/${SSP}/${MOD}/anomalies_1971-2000/30m/dtr_${MOD}_anomaly.nc tmp_adj.nc /home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/reforestation/${SSP}/${MOD}/anomalies_1971-2000/30m/dtr_${MOD}_anomaly.nc;
+
+###############################################################################
+
+## multiply fields per year with sfcWind
+cdo mulc,-0.00005668710 -sellonlatbox,-32,53,-90,90 tmp_2100.nc tmp_afr.nc;
+cdo mulc,-0.00003453562 -sellonlatbox,-180,-32,-90,90 tmp_2100.nc tmp_ama.nc;
+cdo mulc,-0.00004948933 -sellonlatbox,53,180,-90,90 tmp_2100.nc tmp_asa.nc;
+
+cdo mergegrid tmp_2100.nc tmp_ama.nc tmp_1.nc;
+cdo mergegrid tmp_1.nc tmp_afr.nc tmp_2.nc;
+cdo mergegrid tmp_2.nc tmp_asa.nc tmp_3.nc;
+
+cdo mul tmp.nc tmp_3.nc tmp_adj.nc;
+
+## add this on top of anomalies
+cdo -L mergetime -selyear,1850/2019 /home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/control/${SSP}/${MOD}/anomalies_1971-2000/30m/sfcWind_${MOD}_anomaly.nc -add -selyear,2020/2100 /home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/control/${SSP}/${MOD}/anomalies_1971-2000/30m/sfcWind_${MOD}_anomaly.nc tmp_adj.nc /home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/reforestation/${SSP}/${MOD}/anomalies_1971-2000/30m/sfcWind_${MOD}_anomaly.nc;
+
+### copy clt, lightning, wetdays, preacc
+#cp /home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/control/${SSP}/${MOD}/anomalies_1971-2000/30m/clt_${MOD}_anomaly.nc /home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/reforestation/${SSP}/${MOD}/anomalies_1971-2000/30m/clt_${MOD}_anomaly.nc;
+#cp /home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/control/${SSP}/${MOD}/anomalies_1971-2000/30m/lightning_${MOD}_anomaly.nc /home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/reforestation/${SSP}/${MOD}/anomalies_1971-2000/30m/lightning_${MOD}_anomaly.nc;
+#cp /home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/control/${SSP}/${MOD}/anomalies_1971-2000/30m/wetdays_${MOD}_anomaly.nc /home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/reforestation/${SSP}/${MOD}/anomalies_1971-2000/30m/wetdays_${MOD}_anomaly.nc;
+#cp /home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/control/${SSP}/${MOD}/anomalies_1971-2000/30m/preacc_${MOD}_anomaly.nc /home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/reforestation/${SSP}/${MOD}/anomalies_1971-2000/30m/preacc_${MOD}_anomaly.nc;
+
+
+done;
+done
+
+

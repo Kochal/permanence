@@ -1,0 +1,181 @@
+TARGET=/home/akoch/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/
+RUN=control
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5;
+do
+for VAR in clt lightning preacc sfcWind tas dtr wetdays;
+do
+cdo -f nc4 -P 8 remapbic,global_0.5 ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/nativeres/${VAR}_Amon_${MOD}_185001-210012.nc ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/30m/${VAR}_${MOD}_anomaly.nc;
+ls ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/30m/${VAR}_${MOD}_anomaly.nc;
+done;
+done;
+done
+
+## copy control to reforestation
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5;
+do
+cp ${TARGET}/control/${SSP}/${MOD}/anomalies_1971-2000/30m/*_anomaly.nc ${TARGET}/reforestation/${SSP}/${MOD}/anomalies_1971-2000/30m/
+done; 
+done
+
+
+######### HIGH-RES ######################################################
+SSP=ssp245 #ssp370 ssp585;
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR;
+do
+for VAR in clt lightning preacc sfcWind tas dtr wetdays;
+do
+cdo -f nc4 -P 8 remapbic,/home/akoch/LPJ/climategenerator/tools/grid4320x2160 ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/nativeres/${VAR}_Amon_${MOD}_185001-210012.nc ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/30m/${VAR}_${MOD}_anomaly.nc;
+ls ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/5m/${VAR}_${MOD}_anomaly.nc;
+done;
+done
+
+
+SSP=ssp245
+for MOD in MRI-ESM2-0 FGOALS-g3 MIROC6;
+do
+for VAR in clt lightning preacc sfcWind tas dtr wetdays;
+do
+cdo -f nc4 -P 8 remapbic,/home/akoch/LPJ/climategenerator/tools/grid4320x2160 ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/nativeres/${VAR}_Amon_${MOD}_185001-210012.nc ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/30m/${VAR}_${MOD}_anomaly.nc;
+ls ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/5m/${VAR}_${MOD}_anomaly.nc;
+done;
+done
+
+SSP=ssp245
+for MOD in ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR;
+do
+for VAR in clt lightning preacc sfcWind tas dtr wetdays;
+do
+cdo -f nc4 -P 8 remapbic,/home/akoch/LPJ/climategenerator/tools/grid4320x2160 ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/nativeres/${VAR}_Amon_${MOD}_185001-210012.nc ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/30m/${VAR}_${MOD}_anomaly.nc;
+ls ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/5m/${VAR}_${MOD}_anomaly.nc;
+done;
+done
+
+
+SSP=ssp245
+for MOD in EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5;
+do
+for VAR in clt lightning preacc sfcWind tas dtr wetdays;
+do
+cdo -f nc4 -P 8 remapbic,/home/akoch/LPJ/climategenerator/tools/grid4320x2160 ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/nativeres/${VAR}_Amon_${MOD}_185001-210012.nc ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/30m/${VAR}_${MOD}_anomaly.nc;
+ls ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/5m/${VAR}_${MOD}_anomaly.nc;
+done;
+done
+
+##############################################################################
+module purge
+module load CDO
+TARGET=/home/akoch/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/
+RUN=control
+SSP=ssp370 # ssp585;
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR;
+do
+for VAR in clt lightning preacc sfcWind tas dtr wetdays;
+do
+cdo -f nc4 -P 8 remapbic,/home/akoch/LPJ/climategenerator/tools/grid4320x2160 ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/nativeres/${VAR}_Amon_${MOD}_185001-210012.nc ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/30m/${VAR}_${MOD}_anomaly.nc;
+ls ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/5m/${VAR}_${MOD}_anomaly.nc;
+done;
+done
+
+module purge
+module load CDO
+TARGET=/home/akoch/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/
+RUN=control
+SSP=ssp370
+for MOD in MRI-ESM2-0 FGOALS-g3 MIROC6;
+do
+for VAR in clt lightning preacc sfcWind tas dtr wetdays;
+do
+cdo -f nc4 -P 8 remapbic,/home/akoch/LPJ/climategenerator/tools/grid4320x2160 ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/nativeres/${VAR}_Amon_${MOD}_185001-210012.nc ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/30m/${VAR}_${MOD}_anomaly.nc;
+ls ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/5m/${VAR}_${MOD}_anomaly.nc;
+done;
+done
+
+module purge
+module load CDO
+TARGET=/home/akoch/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/
+RUN=control
+SSP=ssp370
+for MOD in ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR;
+do
+for VAR in clt lightning preacc sfcWind tas dtr wetdays;
+do
+cdo -f nc4 -P 8 remapbic,/home/akoch/LPJ/climategenerator/tools/grid4320x2160 ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/nativeres/${VAR}_Amon_${MOD}_185001-210012.nc ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/30m/${VAR}_${MOD}_anomaly.nc;
+ls ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/5m/${VAR}_${MOD}_anomaly.nc;
+done;
+done
+
+module purge
+module load CDO
+TARGET=/home/akoch/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/
+RUN=control
+SSP=ssp370
+for MOD in EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5;
+do
+for VAR in clt lightning preacc sfcWind tas dtr wetdays;
+do
+cdo -f nc4 -P 8 remapbic,/home/akoch/LPJ/climategenerator/tools/grid4320x2160 ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/nativeres/${VAR}_Amon_${MOD}_185001-210012.nc ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/30m/${VAR}_${MOD}_anomaly.nc;
+ls ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/5m/${VAR}_${MOD}_anomaly.nc;
+done;
+done
+
+##############################################################################
+module purge
+module load CDO
+TARGET=/home/akoch/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/
+RUN=control
+SSP=ssp585 # ;
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR;
+do
+for VAR in clt lightning preacc sfcWind tas dtr wetdays;
+do
+cdo -f nc4 -P 8 remapbic,/home/akoch/LPJ/climategenerator/tools/grid4320x2160 ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/nativeres/${VAR}_Amon_${MOD}_185001-210012.nc ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/30m/${VAR}_${MOD}_anomaly.nc;
+ls ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/5m/${VAR}_${MOD}_anomaly.nc;
+done;
+done
+
+module purge
+module load CDO
+TARGET=/home/akoch/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/
+RUN=control
+SSP=ssp585
+for MOD in MRI-ESM2-0 FGOALS-g3 MIROC6;
+do
+for VAR in clt lightning preacc sfcWind tas dtr wetdays;
+do
+cdo -f nc4 -P 8 remapbic,/home/akoch/LPJ/climategenerator/tools/grid4320x2160 ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/nativeres/${VAR}_Amon_${MOD}_185001-210012.nc ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/30m/${VAR}_${MOD}_anomaly.nc;
+ls ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/5m/${VAR}_${MOD}_anomaly.nc;
+done;
+done
+
+module purge
+module load CDO
+TARGET=/home/akoch/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/
+RUN=control
+SSP=ssp585
+for MOD in ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR;
+do
+for VAR in clt lightning preacc sfcWind tas dtr wetdays;
+do
+cdo -f nc4 -P 8 remapbic,/home/akoch/LPJ/climategenerator/tools/grid4320x2160 ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/nativeres/${VAR}_Amon_${MOD}_185001-210012.nc ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/30m/${VAR}_${MOD}_anomaly.nc;
+ls ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/5m/${VAR}_${MOD}_anomaly.nc;
+done;
+done
+
+module purge
+module load CDO
+TARGET=/home/akoch/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/
+RUN=control
+SSP=ssp585
+for MOD in EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5;
+do
+for VAR in clt lightning preacc sfcWind tas dtr wetdays;
+do
+cdo -f nc4 -P 8 remapbic,/home/akoch/LPJ/climategenerator/tools/grid4320x2160 ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/nativeres/${VAR}_Amon_${MOD}_185001-210012.nc ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/30m/${VAR}_${MOD}_anomaly.nc;
+ls ${TARGET}/${RUN}/${SSP}/${MOD}/anomalies_1971-2000/5m/${VAR}_${MOD}_anomaly.nc;
+done;
+done

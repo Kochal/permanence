@@ -1,0 +1,51 @@
+/home/ucfaako/Documents/future_forests/code/check_models.R
+/home/ucfaako/Documents/future_forests/code/daily2monthly.txt
+/home/ucfaako/Documents/future_forests/code/ncrcat_vars.txt
+/home/ucfaako/Documents/future_forests/code/make_climatologies_1971-2000.txt
+/home/ucfaako/Documents/future_forests/code/extract_spinup.txt
+/home/ucfaako/Documents/future_forests/code/prep_spinup_pr.txt
+/home/ucfaako/Documents/future_forests/code/make_dtr.txt
+/home/ucfaako/Documents/future_forests/code/rotate.txt
+/home/ucfaako/Documents/future_forests/code/calc_lightning.txt
+/home/ucfaako/Documents/future_forests/code/make_anomalies.txt
+/home/ucfaako/Documents/future_forests/code/interpolate_30m.txt # lighting 30m anomaly needs to be added
+/home/ucfaako/Documents/future_forests/code/make_climate_spinup.txt
+
+
+/home/ucfaako/Documents/future_forests/code/combine_1850-2100.txt
+/home/ucfaako/Documents/future_forests/code/calc_lightning_transient.txt
+/home/ucfaako/Documents/future_forests/code/prep_transient_pr.txt
+/home/ucfaako/Documents/future_forests/code/make_dtr_transient.txt
+/home/ucfaako/Documents/future_forests/code/rotate_transient.txt
+/home/ucfaako/Documents/future_forests/code/make_anomalies_transient.txt
+/home/ucfaako/Documents/future_forests/code/interpolate_30m_transient.txt
+/home/ucfaako/Documents/future_forests/code/make_climate_transient.txt
+
+
+############# baseline climate files: 4320x2160 ################################
+cdo -setattribute,L@units=strokes km^-2 day^-1 /home/terraces/datasets/WWLLN/gridded_AEfiles/5m/monthly_files/wwlln_5m_clim-2010-2019.nc /home/terraces/datasets/WWLLN/gridded_AEfiles/5m/monthly_files/wwlln_5m_clim-2010-2019day.nc\nMon Dec 14 17:40:03 2020: ncrename -v stroke_density,L /home/terraces/datasets/WWLLN/gridded_AEfiles/5m/monthly_files/wwlln_5m_clim-2010-2019.nc\nMon Dec 14 17:39:14 2020: cdo divdpm /home/terraces/datasets/WWLLN/gridded_AEfiles/5m/monthly_files/wwlln_5m_clim-2010-2019.nc /home/terraces/datasets/WWLLN/gridded_AEfiles/5m/monthly_files/wwlln_5m_clim-2010-2019day.nc\nMon Dec 14 17:36:27 2020: cdo -ymonmean /home/terraces/datasets/WWLLN/gridded_AEfiles/5m/monthly_files/wwlln_5m_1019.nc /home/terraces/datasets/WWLLN/gridded_AEfiles/5m/monthly_files/wwlln_5m_clim-2010-2019.nc
+
+cdo -L -setattribute,stroke_density@units="strokes km^-2 day^-1" -divdpm -ymonmean /home/terraces/datasets/WWLLN/gridded_AEfiles/5m/monthly_files/wwlln_5m_1019.nc /home/terraces/datasets/WWLLN/gridded_AEfiles/5m/monthly_files/wwlln_5m_clim_2010-2019.nc
+
+
+
+tmp = /home/terraces/datasets/climate/CHELSA/temp_CHELSA_5min.nc # degC
+dtr = /home/terraces/datasets/climate/CHELSA/dtr_CHELSA_5min.nc # degC
+pre = /home/terraces/datasets/climate/CHELSA/prec_CHELSA_5min.nc # mm month
+wetdays = /home/terraces/archive/arve/shared/datasets/climate/CRU/ts4.00/wetVpre_cruts400_5min.nc
+L = /home/terraces/datasets/WWLLN/gridded_AEfiles/5m/monthly_files/wwlln_5m_clim_2010-2019.nc # strokes per km2 per month 
+sfcWind = /home/terraces/archive/arve/shared/datasets/climate/CRU/cl2.00/nc/30m/wnd_climate4.nc
+clt = /home/terraces/datasets/climate/MODCF/MODCF_5min.nc # 0-100 %
+
+
+ncgen -k nc4 -o baseline_climate_template_30min.nc baseline_climate_template_30min.cdl
+ncks -A -v tmp CHELSA/temp_CHELSA_30min.nc baseline_climate_template_30min.nc
+ncks -A -v dtr CHELSA/dtr_CHELSA_30min.nc baseline_climate_template_30min.nc
+ncks -A -v pre CHELSA/prec_CHELSA_30min.nc baseline_climate_template_30min.nc
+ncks -A -v lght /home/terraces/datasets/WWLLN/gridded_AEfiles/30m/wwlln_30m_clim_2010-2019.nc baseline_climate_template_30min.nc
+ncks -A -v wet CHELSA/wetdays_CHELSA_30min_short.nc baseline_climate_template_30min.nc
+ncks -A -v wnd /home/terraces/archive/arve/shared/datasets/climate/CRU/cl2.00/nc/30m/wnd_climate4.nc baseline_climate_template_30min.nc
+ncks -A -v cld /home/terraces/datasets/climate/MODCF/MODCF_30min.nc baseline_climate_template_30min.nc
+ncks -A -v elv /home/terraces/datasets/topography/topotools_output/elv_1800arcsec.nc baseline_climate_template_30min.nc
+
+soil = 

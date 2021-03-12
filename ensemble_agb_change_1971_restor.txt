@@ -1,0 +1,71 @@
+## agb changes in restoration area only
+cd /home/terraces/projects/LPJ_futuretropics/agb_restor/
+
+MASK=/home/terraces/projects/LPJ_futuretropics/afforestation_mask_tropics.nc
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+for VAR in ctl_fire ctl ctl_fixco2_fire;
+do
+# decadal means for 1970s
+cdo timmean -mul -selyear,1970/1979 -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_ssp126_30min_global_${VAR}.nc $MASK ${MOD}_${VAR}_1970.nc;
+done
+done
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for VAR in ctl ctl_fire restor_fire restor_cl_fire restor ctl_fixco2_2014_fire ctl_fixco2_fire; #ctl_fixco2_2014
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+
+# decadal means for 2020s
+cdo -L timmean -mul -selyear,2020/2029 -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK ${MOD}_${SSP}_${VAR}_2020.nc;
+
+# decadal means for 2040s
+cdo -L timmean -mul -selyear,2040/2049 -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK ${MOD}_${SSP}_${VAR}_2040.nc;
+
+# decadal means for 2090s
+cdo -L timmean -mul -selyear,2090/2099 -selvar,albiomass /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK ${MOD}_${SSP}_${VAR}_2090.nc;
+
+
+cdo sub ${MOD}_${SSP}_ctl_2020.nc ${MOD}_ctl_1970.nc albiomass_${MOD}_${SSP}_ctl_diff_2020-1970.nc
+cdo sub ${MOD}_${SSP}_ctl_fire_2020.nc ${MOD}_ctl_fire_1970.nc albiomass_${MOD}_${SSP}_ctl_fire_diff_2020-1970.nc
+cdo sub ${MOD}_${SSP}_ctl_fixco2_fire_2020.nc ${MOD}_ctl_fixco2_fire_1970.nc albiomass_${MOD}_${SSP}_ctl_fixco2_fire_diff_2020-1970.nc
+cdo sub ${MOD}_${SSP}_${VAR}_2040.nc ${MOD}_${SSP}_${VAR}_2020.nc albiomass_${MOD}_${SSP}_${VAR}_diff_2040-2020.nc
+cdo sub ${MOD}_${SSP}_${VAR}_2090.nc ${MOD}_${SSP}_${VAR}_2020.nc albiomass_${MOD}_${SSP}_${VAR}_diff_2090-2020.nc
+
+done;
+
+cdo merge albiomass_*_${SSP}_${VAR}_diff_2040-2020.nc albiomass_${SSP}_${VAR}_diff_2040-2020_ens.nc
+cdo merge albiomass_*_${SSP}_${VAR}_diff_2090-2020.nc albiomass_${SSP}_${VAR}_diff_2090-2020_ens.nc
+
+done;
+cdo merge albiomass_*_${SSP}_ctl_diff_2020-1970.nc albiomass_${SSP}_ctl_diff_2020-1970_ens.nc
+cdo merge albiomass_*_${SSP}_ctl_fire_diff_2020-1970.nc albiomass_${SSP}_ctl_fire_diff_2020-1970_ens.nc
+
+cdo merge albiomass_*_${SSP}_ctl_fixco2_fire_diff_2020-1970.nc albiomass_${SSP}_ctl_fixco2_fire_diff_2020-1970_ens.nc
+
+done
+
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for VAR in ctl ctl_fire restor_fire restor_cl_fire restor ctl_fixco2_fire; #ctl_fixco2_2014_fire
+do
+for TIME in 2040-2020 2090-2020;
+do
+cdo -L -mul /home/terraces/projects/LPJ_futuretropics/agb_restor/albiomass_${SSP}_${VAR}_diff_${TIME}_ens.nc -gridarea /home/terraces/projects/LPJ_futuretropics/agb_restor/albiomass_${SSP}_${VAR}_diff_${TIME}_ens.nc /home/terraces/projects/LPJ_futuretropics/agb_restor/totalbiomass_${SSP}_${VAR}_diff_${TIME}_ens.nc
+Rscript --vanilla /home/akoch/scripts/future_forests/ensemble_agb_change_continents.R /home/terraces/projects/LPJ_futuretropics/agb_restor/totalbiomass_${SSP}_${VAR}_diff_${TIME}_ens.nc /home/akoch/data/carbon_offsets/ne_10m_admin_0_countries.shp /home/terraces/projects/LPJ_futuretropics/agb_restor/totalbiomass_${SSP}_${VAR}_diff_${TIME}_ens.csv
+done;
+done;
+
+
+for VAR in ctl ctl_fire ctl_fixco2_fire;
+do
+TIME=2020-1970 
+cdo -L -mul /home/terraces/projects/LPJ_futuretropics/agb_restor/albiomass_${SSP}_${VAR}_diff_${TIME}_ens.nc -gridarea /home/terraces/projects/LPJ_futuretropics/agb_restor/albiomass_${SSP}_${VAR}_diff_${TIME}_ens.nc /home/terraces/projects/LPJ_futuretropics/agb_restor/totalbiomass_${SSP}_${VAR}_diff_${TIME}_ens.nc
+Rscript --vanilla /home/akoch/scripts/future_forests/ensemble_agb_change_continents.R /home/terraces/projects/LPJ_futuretropics/agb_restor/totalbiomass_${SSP}_${VAR}_diff_${TIME}_ens.nc /home/akoch/data/carbon_offsets/ne_10m_admin_0_countries.shp /home/terraces/projects/LPJ_futuretropics/agb_restor/totalbiomass_${SSP}_${VAR}_diff_${TIME}_ens.csv
+done
+done
+

@@ -1,0 +1,8 @@
+TARGET=/home/akoch/terraces/datasets/climategenerator_data/CMIP6_permanence/spinup/
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+cdo -f nc4 sub ${TARGET}/${MOD}/rawdata/climean/tasmax_Amon_${MOD}_185001-185912.nc ${TARGET}/${MOD}/rawdata/climean/tasmin_Amon_${MOD}_185001-185912.nc ${TARGET}/${MOD}/rawdata/climean/dtr_Amon_${MOD}_185001-185912.nc;
+ncrename -v tasmax,dtr ${TARGET}/${MOD}/rawdata/climean/dtr_Amon_${MOD}_185001-185912.nc;
+done
+

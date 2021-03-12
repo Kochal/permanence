@@ -1,0 +1,70 @@
+MASK=/home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc
+for VAR in ctl_fixlu_fire ctl_fire;
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+cdo -L -mul -timmean -mul -selyear,1860/1899 -selvar,burnedf /home/terraces/datasets/dgvm_output/${MOD}_ssp126_30min_global_${VAR}.nc -gridarea $MASK $MASK burneda_${MOD}_${VAR}_1860.nc;
+cdo -L -mul -timmean -mul -selyear,1971/2000 -selvar,burnedf /home/terraces/datasets/dgvm_output/${MOD}_ssp126_30min_global_${VAR}.nc -gridarea $MASK $MASK burneda_${MOD}_${VAR}_1971.nc;
+done
+cdo merge burneda_*_${VAR}_1860.nc burneda_${VAR}_1860_ens.nc
+cdo merge burneda_*_${VAR}_1971.nc burneda_${VAR}_1971_ens.nc
+
+Rscript --vanilla /home/akoch/scripts/future_forests/burnt_area_cntr.R /home/terraces/projects/LPJ_futuretropics/fire/burneda_${VAR}_1860_ens.nc /home/akoch/data/carbon_offsets/ne_10m_admin_0_countries.shp /home/terraces/projects/LPJ_futuretropics/fire/burneda_${VAR}_1860_ens.csv
+Rscript --vanilla /home/akoch/scripts/future_forests/burnt_area_cntr.R /home/terraces/projects/LPJ_futuretropics/fire/burneda_${VAR}_1971_ens.nc /home/akoch/data/carbon_offsets/ne_10m_admin_0_countries.shp /home/terraces/projects/LPJ_futuretropics/fire/burneda_${VAR}_1971_ens.csv
+done 
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for VAR in ctl_fixlu_fire ctl_fire restor_cl_fire restor_fire; # ctl_fixlu_fire is how much of the change in fire is due to land use change
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+## total burnt area 
+cdo timmean -mul -mul -selyear,2001/2030 -selvar,burnedf /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc -gridarea $MASK $MASK burneda_${SSP}_${MOD}_${VAR}_2001.nc;
+cdo timmean -mul -mul -selyear,2071/2100 -selvar,burnedf /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc -gridarea $MASK $MASK burneda_${SSP}_${MOD}_${VAR}_2071.nc;
+
+done;
+cdo merge burneda_${SSP}_*_${VAR}_2001.nc burneda_${SSP}_${VAR}_2001_ens.nc
+cdo merge burneda_${SSP}_*_${VAR}_2071.nc burneda_${SSP}_${VAR}_2071_ens.nc
+
+Rscript --vanilla /home/akoch/scripts/future_forests/burnt_area_cntr.R /home/terraces/projects/LPJ_futuretropics/fire/burneda_${SSP}_${VAR}_2001_ens.nc /home/akoch/data/carbon_offsets/ne_10m_admin_0_countries.shp /home/terraces/projects/LPJ_futuretropics/fire/burneda_${SSP}_${VAR}_2001_ens.csv
+Rscript --vanilla /home/akoch/scripts/future_forests/burnt_area_cntr.R /home/terraces/projects/LPJ_futuretropics/fire/burneda_${SSP}_${VAR}_2071_ens.nc /home/akoch/data/carbon_offsets/ne_10m_admin_0_countries.shp /home/terraces/projects/LPJ_futuretropics/fire/burneda_${SSP}_${VAR}_2071_ens.csv
+done;
+done
+
+### BURNT AREA IN RESTORATION GRIDS
+MASK=/home/terraces/projects/LPJ_futuretropics/afforestation_mask_tropics.nc
+
+## 1971-2000
+SSP=ssp585
+for VAR in ctl_fixlu_fire ctl_fire ctl_fixco2_fire;
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+## total burnt area 
+cdo timmean -mul -mul -selyear,1971/2000 -selvar,burnedf /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc -gridarea $MASK $MASK burneda_${SSP}_${MOD}_${VAR}_restor_1971.nc;
+done;
+cdo merge burneda_${SSP}_*_${VAR}_restor_1971.nc burneda_${SSP}_${VAR}_restor_1971_ens.nc
+Rscript --vanilla /home/akoch/scripts/future_forests/burnt_area_cntr.R /home/terraces/projects/LPJ_futuretropics/fire/burneda_${SSP}_${VAR}_restor_1971_ens.nc /home/akoch/data/carbon_offsets/ne_10m_admin_0_countries.shp /home/terraces/projects/LPJ_futuretropics/fire/burneda_${SSP}_${VAR}_restor_1971_ens.csv
+done
+
+
+## FUTURE
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for VAR in ctl_fixlu_fire ctl_fixco2_fire ctl_fire restor_cl_fire restor_fire; # ctl_fixlu_fire is how much of the change in fire is due to land use change
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+## total burnt area 
+cdo timmean -mul -mul -selyear,2001/2030 -selvar,burnedf /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc -gridarea $MASK $MASK burneda_${SSP}_${MOD}_${VAR}_restor_2001.nc;
+cdo timmean -mul -mul -selyear,2071/2100 -selvar,burnedf /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc -gridarea $MASK $MASK burneda_${SSP}_${MOD}_${VAR}_restor_2071.nc;
+
+done;
+cdo merge burneda_${SSP}_*_${VAR}_restor_2001.nc burneda_${SSP}_${VAR}_restor_2001_ens.nc
+cdo merge burneda_${SSP}_*_${VAR}_restor_2071.nc burneda_${SSP}_${VAR}_restor_2071_ens.nc
+
+Rscript --vanilla /home/akoch/scripts/future_forests/burnt_area_cntr.R /home/terraces/projects/LPJ_futuretropics/fire/burneda_${SSP}_${VAR}_restor_2001_ens.nc /home/akoch/data/carbon_offsets/ne_10m_admin_0_countries.shp /home/terraces/projects/LPJ_futuretropics/fire/burneda_${SSP}_${VAR}_restor_2001_ens.csv
+Rscript --vanilla /home/akoch/scripts/future_forests/burnt_area_cntr.R /home/terraces/projects/LPJ_futuretropics/fire/burneda_${SSP}_${VAR}_restor_2071_ens.nc /home/akoch/data/carbon_offsets/ne_10m_admin_0_countries.shp /home/terraces/projects/LPJ_futuretropics/fire/burneda_${SSP}_${VAR}_restor_2071_ens.csv
+done;
+done

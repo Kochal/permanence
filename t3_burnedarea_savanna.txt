@@ -1,0 +1,20 @@
+cd /home/terraces/projects/LPJ_futuretropics/fire/
+MASK=/home/terraces/projects/LPJ_futuretropics/afforestation_mask_tropics.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+
+cdo -L expr,"cover=cover>0.3" -timmean -vertsum -sellevel,1/7 -selvar,cover -selyear,1995/2014 /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_restor_tiles_fire.nc trees.nc
+cdo -L expr,"albiomass=albiomass>10000" -timmean -selvar,albiomass -selyear,1995/2014 /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_restor_tiles_fire.nc agb_100.nc
+cdo -L -mul trees.nc -mul agb_100.nc $MASK nosavanna.nc
+cdo -L -mul -subc,-1 trees.nc -mul -subc,-1 agb_100.nc $MASK savanna.nc 
+
+cdo -L  -selyear,2014/2100 -selvar,fireCH4 /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_restor_tiles_fire.nc t3_burnedf.nc
+
+cdo mul t3_burnedf.nc nosavanna.nc t3_burnedf_nosav_${MOD}_${SSP}.nc
+cdo mul t3_burnedf.nc savanna.nc t3_burnedf_sav_${MOD}_${SSP}.nc
+
+done 
+done 

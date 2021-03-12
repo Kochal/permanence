@@ -1,0 +1,41 @@
+TARGET=/home/akoch/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/
+HIST=/home/akoch/terraces/datasets/CMIP6/historical/Amon/
+SCEN=/home/akoch/terraces/datasets/CMIP6/scenarioMIP/
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+for VAR in clt mc pr sfcWind tas tasmax tasmin prc;
+do
+ncrcat ${HIST}${VAR}/${VAR}_Amon_${MOD}_historical_r1i1p1f1_*_185001-201412.nc ${SCEN}/${SSP}/Amon/${VAR}/${VAR}_Amon_${MOD}_*_201501-210012.nc ${TARGET}/control/${SSP}/${MOD}/rawdata/${VAR}_Amon_${MOD}_185001-210012.nc;
+echo ${TARGET}/control/${SSP}/${MOD}/rawdata/${VAR}_Amon_${MOD}_185001-210012.nc;
+done;
+done;
+done
+
+# NorESM2-LM only has 1950-2014 tasmin/tasmax !!!
+
+for SSP in ssp126 ssp245 ssp585;
+do
+for MOD in BCC-CSM2-MR MRI-ESM2-0 MIROC6;
+do
+for VAR in mc;
+do
+ncrcat ${HIST}${VAR}/${VAR}_Amon_${MOD}_historical_r1i1p1f1_*_185001-201412.nc ${SCEN}/${SSP}/Amon/${VAR}/${VAR}_Amon_${MOD}_*_201501-210012.nc ${TARGET}/baseline/${SSP}/${MOD}/rawdata/${VAR}_Amon_${MOD}_185001-210012.nc;
+echo ${TARGET}/baseline/${SSP}/${MOD}/rawdata/${VAR}_Amon_${MOD}_185001-210012.nc;
+done;
+done;
+done
+
+VAR=prc
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+ncrcat ${HIST}${VAR}/${VAR}_Amon_${MOD}_historical_r1i1p1f1_*_185001-201412.nc ${SCEN}/${SSP}/Amon/${VAR}/${VAR}_Amon_${MOD}_*_201501-210012.nc ${TARGET}/control/${SSP}/${MOD}/rawdata/${VAR}_Amon_${MOD}_185001-210012.nc;
+echo ${TARGET}/baseline/${SSP}/${MOD}/control/${VAR}_Amon_${MOD}_185001-210012.nc;
+done;
+done
+
+

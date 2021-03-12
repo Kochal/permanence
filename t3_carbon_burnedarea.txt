@@ -1,0 +1,81 @@
+# Change in regrowth carbon depending on climate change and CO2 and fire
+# Change in fire depending on carbon increase from restoration
+
+cd /home/akoch/terraces/projects/LPJ_futuretropics/totc_restor
+MASK=/home/terraces/projects/LPJ_futuretropics/afforestation_mask_tropics.nc
+
+for VAR in restor_fixco2_1850_fire restor_fixco2_2014_fire restor_fire restor ctl_fire ctl_fixco2_1850_fire ctl_fixco2_2014_fire;
+do
+## calculate t3 tile area
+cdo -L -mul -mul -sellevel,3 -selvar,coverfrac /home/terraces/datasets/dgvm_output/BCC-CSM2-MR_ssp126_30min_global_${VAR}.nc -gridarea $MASK $MASK  t3_gridarea_1850-2100.nc
+GRIDAREA=t3_gridarea_1850-2100.nc
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+cdo -L timmean -mul -selyear,2020/2029 -sellevel,3 -selvar,tilecarbon /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc -selyear,2020/2029 $GRIDAREA t3C_${MOD}_${SSP}_${VAR}_2020.nc;
+cdo -L timmean -mul -selyear,2030/2039 -sellevel,3 -selvar,tilecarbon /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc -selyear,2030/2039 $GRIDAREA t3C_${MOD}_${SSP}_${VAR}_2030.nc;
+cdo -L timmean -mul -selyear,2050/2059 -sellevel,3 -selvar,tilecarbon /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc -selyear,2050/2059 $GRIDAREA t3C_${MOD}_${SSP}_${VAR}_2050.nc;
+
+cdo -L timmean -mul -selyear,2090/2099 -sellevel,3 -selvar,tilecarbon /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc -selyear,2090/2099 $GRIDAREA t3C_${MOD}_${SSP}_${VAR}_2090.nc;
+done;
+
+VAR=restor_tiles_fire
+cdo -L timmean -mul -selyear,2020/2029 -selvar,fireCH4 /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK t3_burnedf_${MOD}_${SSP}_${VAR}_2020.nc;
+cdo -L timmean -mul -selyear,2030/2039 -selvar,fireCH4 /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK t3_burnedf_${MOD}_${SSP}_${VAR}_2030.nc;
+cdo -L timmean -mul -selyear,2050/2059 -selvar,fireCH4 /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK t3_burnedf_${MOD}_${SSP}_${VAR}_2050.nc;
+
+cdo -L timmean -mul -selyear,2090/2099 -selvar,fireCH4 /home/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK t3_burnedf_${MOD}_${SSP}_${VAR}_2090.nc;
+done;
+done
+
+## calculate t3 tile area
+cdo -L -mul -mul -sellevel,3 -selvar,coverfrac /home/terraces/datasets/dgvm_output/BCC-CSM2-MR_ssp126_30min_global_restor_tiles_fire.nc -gridarea $MASK $MASK  t3_gridarea_1850-2100.nc
+GRIDAREA=t3_gridarea_1850-2100.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for VAR in restor_fixco2_1850_fire restor_fixco2_2014_fire restor_fire restor ctl_fire ctl_fixco2_1850_fire ctl_fixco2_2014_fire;
+do
+cdo merge t3C_*_${SSP}_${VAR}_2020.nc t3C_${SSP}_${VAR}_2020_ens.nc
+cdo merge t3C_*_${SSP}_${VAR}_2030.nc t3C_${SSP}_${VAR}_2030_ens.nc
+cdo merge t3C_*_${SSP}_${VAR}_2050.nc t3C_${SSP}_${VAR}_2050_ens.nc
+cdo merge t3C_*_${SSP}_${VAR}_2090.nc t3C_${SSP}_${VAR}_2090_ens.nc
+
+rm t3C_*_${SSP}_${VAR}_2020.nc; rm t3C_*_${SSP}_${VAR}_2030.nc ; rm t3C_*_${SSP}_${VAR}_2050.nc ; rm t3C_*_${SSP}_${VAR}_2090.nc
+done
+VAR=restor_tiles_fire
+cdo merge t3_burnedf_*_${SSP}_${VAR}_2020.nc t3_burnedf_${SSP}_${VAR}_2020_ens.nc
+cdo merge t3_burnedf_*_${SSP}_${VAR}_2030.nc t3_burnedf_${SSP}_${VAR}_2030_ens.nc
+cdo merge t3_burnedf_*_${SSP}_${VAR}_2050.nc t3_burnedf_${SSP}_${VAR}_2050_ens.nc
+cdo merge t3_burnedf_*_${SSP}_${VAR}_2090.nc t3_burnedf_${SSP}_${VAR}_2090_ens.nc
+
+cdo -L -mul t3_burnedf_${SSP}_${VAR}_2020_ens.nc -timmean -selyear,2020/2029 $GRIDAREA t3_burneda_${SSP}_${VAR}_2020_ens.nc
+cdo -L -mul t3_burnedf_${SSP}_${VAR}_2030_ens.nc -timmean -selyear,2030/2039 $GRIDAREA t3_burneda_${SSP}_${VAR}_2030_ens.nc
+cdo -L -mul t3_burnedf_${SSP}_${VAR}_2050_ens.nc -timmean -selyear,2050/2059 $GRIDAREA t3_burneda_${SSP}_${VAR}_2050_ens.nc
+cdo -L -mul t3_burnedf_${SSP}_${VAR}_2090_ens.nc -timmean -selyear,2090/2099 $GRIDAREA t3_burneda_${SSP}_${VAR}_2090_ens.nc
+
+rm t3_burnedf_*_${SSP}_${VAR}_2020.nc; rm t3_burnedf_*_${SSP}_${VAR}_2030.nc ; rm t3_burnedf_*_${SSP}_${VAR}_2050.nc ; rm t3_burnedf_*_${SSP}_${VAR}_2090.nc
+done
+
+
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for TIME in 2020 2030 2050 2090;
+do
+for VAR in restor_fixco2_1850_fire restor_fixco2_2014_fire restor_fire restor ctl_fire ctl_fixco2_1850_fire ctl_fixco2_2014_fire;
+do
+Rscript --vanilla /home/akoch/scripts/future_forests/burnt_area_cntr.R t3C_${SSP}_${VAR}_${TIME}_ens.nc /home/akoch/data/carbon_offsets/ne_10m_admin_0_countries.shp t3C_${SSP}_${VAR}_${TIME}_ens.csv
+done;
+VAR=restor_tiles_fire
+Rscript --vanilla /home/akoch/scripts/future_forests/burnt_area_cntr.R t3_burneda_${SSP}_${VAR}_${TIME}_ens.nc /home/akoch/data/carbon_offsets/ne_10m_admin_0_countries.shp t3_burneda_${SSP}_${VAR}_${TIME}_ens.csv
+done;
+done
+
+for VAR in restor_fixco2_2014_fire restor_fire;
+do
+for SSP in ssp126 ssp245 ssp370 ssp585; do cdo -L -timmean -selyear,2014,2019 t3C_restor_fire_${SSP}_ensmean.nc t3C_restor_fire_${SSP}_ensmean_2014-2019.nc; done; done
+for SSP in ssp126 ssp245 ssp370 ssp585; do cdo -L -timmean -selyear,2014,2019 t3C_restor_fixco2_2014_fire_${SSP}_ensmean.nc t3C_restor_fixco2_2014_fire_${SSP}_ensmean_2014-2019.nc; done
+
+

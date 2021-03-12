@@ -1,0 +1,71 @@
+netcdf climate_wwna_wwlln {
+dimensions:
+	lon = 18960 ;
+	lat = 16080 ;
+	time = 12 ;
+variables:
+	double lon(lon) ;
+		lon:long_name = "longitude" ;
+		lon:units = "degrees_east" ;
+		lon:actual_range = -180., 180. ;
+		lon:_Storage = "contiguous" ;
+		lon:_Storage = "contiguous" ;
+		lon:_Endianness = "little" ;
+	double lat(lat) ;
+		lat:long_name = "latitude" ;
+		lat:units = "degrees_north" ;
+		lat:actual_range = -90., 90. ;
+		lat:_Storage = "contiguous" ;
+		lat:_Storage = "contiguous" ;
+		lat:_Endianness = "little" ;
+	double time(time) ;
+		time:climatology = "climatology_bounds" ;
+		time:avg_period = "0000-01-00 00:00:00" ;
+		time:long_name = "time" ;
+		time:actual_range = 0., 0. ;
+		time:delta_t = "0000-01-00 00:00:00" ;
+		time:standard_name = "time" ;
+		time:coordinate_defines = "start" ;
+		time:calendar = "standard" ;
+		time:note = "time coordinate refers to first day of month" ;
+		time:units = "days since 0001-01-01 00:00:00" ;
+		time:_Storage = "contiguous" ;
+		time:_Endianness = "little" ;
+	short tmp(time, lat, lon) ;
+		tmp:long_name = "Mean temperature difference" ;
+		tmp:units = "degC" ;
+		tmp:scale_factor = 0.1f ;
+		tmp:add_offset = 0.f ;
+		tmp:missing_value = -32768s ;
+		tmp:avg_period = "1950-2000" ;
+		tmp:source = "CHELSEA 1.2" ;
+		tmp:_ChunkSizes = 1, 348, 720 ;
+		tmp:_DeflateLevel = 1 ;
+		tmp:_Endianness = "little" ;
+		tmp:valid_range = -503s, 391s ;
+		tmp:_Storage = "chunked" ;
+		tmp:_Endianness = "little" ;
+	short pre(time, lat, lon) ;
+		pre:long_name = "Total precipitation difference" ;
+		pre:units = "mm" ;
+		pre:scale_factor = 0.1f ;
+		pre:add_offset = 3276.7f ;
+		pre:missing_value = -32768s ;
+		pre:avg_period = "1950-2000" ;
+		pre:source = "CHELSEA 1.2" ;
+		pre:_ChunkSizes = 1, 348, 720 ;
+		pre:_DeflateLevel = 1 ;
+		pre:valid_range = -32767s, -15437s ;
+		pre:_Storage = "chunked" ;
+		pre:_Endianness = "little" 
+	// global attributes:
+		:Conventions = "COARDS, CF-1.0" ;
+		:title = "Difference climateNA - CHELSEA" ;
+		:node_offset = 1 ;
+		:_SuperblockVersion = 2 ;
+		:_IsNetcdf4 = 1 ;
+		:_Format = "netCDF-4" ;
+data:
+
+ time = 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 ;
+}

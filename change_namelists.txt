@@ -1,0 +1,63 @@
+RUN=control
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5;  #GFDL-ESM4
+do
+FILEDIR=/home/terraces/datasets/climategenerator_data/CMIP6_permanence/spinup;
+cp /home/akoch/template_dir/*.namelist ${FILEDIR}/${MOD}/;
+mv ${FILEDIR}/${MOD}/xxxxx_iav.namelist ${FILEDIR}/${MOD}/${MOD}_iav.namelist;
+mv ${FILEDIR}/${MOD}/xxxxx.namelist ${FILEDIR}/${MOD}/${MOD}.namelist;
+sed -i "s/MODEL/$MOD/" ${FILEDIR}/${MOD}/${MOD}.namelist;
+sed -i "s|FILEDIR|$FILEDIR|g" ${FILEDIR}/${MOD}/${MOD}.namelist;
+sed -i "s|MODELDATA|$MOD|g" ${FILEDIR}/${MOD}/${MOD}.namelist;
+sed -i "s|FILEDIR|$FILEDIR|g" ${FILEDIR}/${MOD}/${MOD}_iav.namelist;
+sed -i "s|MODEL|$MOD|g" ${FILEDIR}/${MOD}/${MOD}_iav.namelist;
+sed -i "s/climatology_xxxxxx.nc/climatology_$MOD.nc/" ${FILEDIR}/${MOD}/${MOD}_iav.namelist;
+
+#sed -i "s|30m|5m|g" ${FILEDIR}/${MOD}/${MOD}.namelist;
+#sed -i "s|30m|5m|g" ${FILEDIR}/${MOD}/${MOD}_iav.namelist;
+sed -i "s|climate_wwna_wwlln_shelves|baseline_climate_30min|g" ${FILEDIR}/${MOD}/${MOD}.namelist;
+
+#sed -i "s|mean.nc|mean_tropics.nc|g" ${FILEDIR}/${MOD}/${MOD}_iav.namelist;
+#sed -i "s|mon.nc|mon_tropics.nc|g" ${FILEDIR}/${MOD}/${MOD}_iav.namelist;
+done
+
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+FILEDIR=/home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/${RUN}/${SSP};
+cp /home/akoch/template_dir/*.namelist ${FILEDIR}/${MOD}/;
+mv ${FILEDIR}/${MOD}/xxxxx_transient.namelist ${FILEDIR}/${MOD}/${MOD}_transient.namelist;
+sed -i "s/MODEL/$MOD/" ${FILEDIR}/${MOD}/${MOD}_transient.namelist;
+sed -i "s|FILEDIR|$FILEDIR|g" ${FILEDIR}/${MOD}/${MOD}_transient.namelist;
+sed -i "s|climate_wwna_wwlln_shelves|baseline_climate_30min|g" ${FILEDIR}/${MOD}/${MOD}_transient.namelist;
+
+#sed -i "s|30m|5m|g" ${FILEDIR}/${MOD}/${MOD}_transient.namelist;
+done;
+done
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+FILEDIR=/home/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/${RUN}/${SSP};
+rm ${FILEDIR}/${MOD}/*.namelist;
+cp /home/akoch/template_dir/*.namelist ${FILEDIR}/${MOD}/;
+done;
+done
+
+
+&joboptions
+timeslice = F
+startyr   = 1850
+basefile  = '/home/terraces/datasets/climategenerator_data/baseline_climate/climate_wwna_wwlln_shelves.nc'
+anompath  = 'FILEDIR/MODEL/anomalies_1971-2000/30m/'
+tmpfile   = 'tas_MODEL_anomaly.nc'
+dtrfile   = 'dtr_MODEL_anomaly.nc'
+prefile   = 'preacc_MODEL_anomaly.nc'
+cldfile   = 'clt_MODEL_anomaly.nc'
+wndfile   = 'sfcWind_MODEL_anomaly.nc'
+wetfile   = 'wetdays_MODEL_anomaly.nc'
+lghtfile  = 'lightning_MODEL_anomaly.nc'
+/

@@ -1,0 +1,60 @@
+TARGET=/home/akoch/terraces/projects/LPJ_lightning/
+HIST=/home/akoch/terraces/datasets/CMIP6/historical/Amon/
+SCEN=/home/akoch/terraces/datasets/CMIP6/scenarioMIP/
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+ncrcat -O ${HIST}/prc/prc_Amon_${MOD}_historical_r1i1p1f1_*_185001-201412.nc ${SCEN}/${SSP}/Amon/prc/prc_Amon_${MOD}_*_201501-210012.nc ${TARGET}/prc_Amon_${MOD}_185001-210012.nc;
+ncks -O -d time,1920,2039 ${TARGET}/prc_Amon_${MOD}_185001-210012.nc  ${TARGET}/prc_Amon_${MOD}_201001-201912.nc
+cdo ymonmean ${TARGET}/prc_Amon_${MOD}_201001-201912.nc ${TARGET}/ymm/prc_Amon_${MOD}_201001-201912_ymm.nc
+done;
+done
+
+
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg GFDL-ESM4 INM-CM4-8 INM-CM5-0 CanESM5;
+do
+ncks -O -d time,1740,1799 ${TARGET}/prc_Amon_${MOD}_185001-210012.nc  ${TARGET}/prc_Amon_${MOD}_199501-200012.nc
+cdo ymonmean ${TARGET}/prc_Amon_${MOD}_199501-200012.nc ${TARGET}/ymm/prc_Amon_${MOD}_199501-200012_ymm.nc
+done
+
+TARGET=/home/akoch/terraces/datasets/climategenerator_data/CMIP6_permanence/transient_1850-2100/control/
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5;
+do
+cdo mulc,86400 ${TARGET}${SSP}/${MOD}/rawdata/prc_Amon_${MOD}_185001-210012.nc ${TARGET}${SSP}/${MOD}/rawdata/prc_Amon_${MOD}_185001-210012_day.nc;
+mv ${TARGET}${SSP}/${MOD}/rawdata/prc_Amon_${MOD}_185001-210012_day.nc ${TARGET}${SSP}/${MOD}/rawdata/prc_Amon_${MOD}_185001-210012.nc;
+done;
+done
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5;
+do
+cdo sellonlatbox,-180,180,-90,90 ${TARGET}${SSP}/${MOD}/rawdata/prc_Amon_${MOD}_185001-210012.nc ${TARGET}${SSP}/${MOD}/rawdata/prc_Amon_${MOD}_185001-210012_R.nc;
+mv ${TARGET}${SSP}/${MOD}/rawdata/prc_Amon_${MOD}_185001-210012_R.nc ${TARGET}${SSP}/${MOD}/rawdata/prc_Amon_${MOD}_185001-210012.nc;
+done;
+done
+
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5;
+do
+python /home/akoch/LPJ/climategenerator/tools/precip_lightning.py ${TARGET}${SSP}/${MOD}/rawdata/prc_Amon_${MOD}_185001-210012.nc ${TARGET}${SSP}/${MOD}/rawdata/lightning_Amon_${MOD}_185001-210012.nc;
+done;
+done
+
+
+## this should in future be done in make_climatologies_1971-2000.txt #######
+for SSP in ssp126 ssp245 ssp370 ssp585;
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5;
+do
+ncks -O -d time,1452,1811 ${TARGET}${SSP}/${MOD}/rawdata/lightning_Amon_${MOD}_185001-210012.nc /home/akoch/terraces/datasets/climategenerator_data/climatology_1971-2000/cmip6/lightning_Amon_${MOD}_197101-200012.nc;
+cdo ymonmean /home/akoch/terraces/datasets/climategenerator_data/climatology_1971-2000/cmip6/lightning_Amon_${MOD}_197101-200012.nc /home/akoch/terraces/datasets/climategenerator_data/climatology_1971-2000/cmip6/lightning_Amon_${MOD}_197101-200012_clim.nc;
+rm /home/akoch/terraces/datasets/climategenerator_data/climatology_1971-2000/cmip6/lightning_Amon_${MOD}_197101-200012.nc;
+done;
+done

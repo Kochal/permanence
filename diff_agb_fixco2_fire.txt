@@ -1,0 +1,31 @@
+## AGB differences between ctl_fire and ctl_fixco2_2014_fire
+
+cd /home/terraces/projects/LPJ_futuretropics/agb/
+MASK=/home/terraces/datasets/vegetation/tropical_upland_mask_NA_30min.nc
+
+for SSP in ssp126 ssp245 ssp370 ssp585; 
+do
+for VAR in ctl_fire ctl_fixco2_2014_fire;
+do
+for MOD in BCC-CSM2-MR IPSL-CM6A-LR MPI-ESM1-2-HR MRI-ESM2-0 FGOALS-g3 MIROC6 ACCESS-CM2 ACCESS-ESM1-5 AWI-CM-1-1-MR EC-Earth3-Veg INM-CM4-8 INM-CM5-0 CanESM5; 
+do
+cdo -L -mul -selyear,2001/2030 -selvar,albiomass /home/akoch/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK albiomass_${MOD}_${SSP}_${VAR}_2001-2030.nc;
+cdo -L -mul -selyear,2071/2100 -selvar,albiomass /home/akoch/terraces/datasets/dgvm_output/${MOD}_${SSP}_30min_global_${VAR}.nc $MASK albiomass_${MOD}_${SSP}_${VAR}_2071-2100.nc;
+done
+
+for TIME in 2001-2030 2071-2100; 
+do
+VARS=$(ls albiomass_*${VAR}_${TIME}.nc);
+cdo -L ensmean $VARS albiomass_${SSP}_${VAR}_${TIME}_ensmean.nc;
+done
+
+## future change in biomass 
+cdo -L -sub -timmean albiomass_${SSP}_${VAR}_2071-2100_ensmean.nc albiomass_${SSP}_${VAR}_2001-2030_ensmean.nc albiomass_${SSP}_${VAR}_future-present_ensmean.nc
+
+done;
+
+## difference between future biomass - positive values mean more biomass under fixed co2
+cdo sub albiomass_${SSP}_ctl_fixco2_2014_fire_2001-2030_ensmean.nc albiomass_${SSP}_ctl_fire_2001-2030_ensmean.nc albiomass_${SSP}_fixco2-ctl_2001-2030_ensmean.nc
+cdo sub albiomass_${SSP}_ctl_fixco2_2014_fire_2071-2100_ensmean.nc albiomass_${SSP}_ctl_fire_2071-2100_ensmean.nc albiomass_${SSP}_fixco2-ctl_2071-2100_ensmean.nc
+
+done

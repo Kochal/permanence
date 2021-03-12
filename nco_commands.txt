@@ -1,0 +1,20 @@
+ncks -v c3ann,c3nfx,c3per,c4ann,c4per,pastr multiple-states_input4MIPs_landState_ScenarioMIP_UofMD-IMAGE-ssp126-2-1-f_gn_2015-2100.nc  
+ncks -v c3ann,c3nfx,c3per,c4ann,c4per,pastr multiple-states_input4MIPs_landState_ScenarioMIP_UofMD-AIM-ssp370-2-1-f_gn_2015-2100.nc landuse_ssp370.nc 
+
+ncks -v c3ann_to_secdf,c3nfx_to_secdf,c3per_to_secdf,c4ann_to_secdf,c4per_to_secdf,pastr_to_secdf multiple-transitions_input4MIPs_landState_ScenarioMIP_UofMD-AIM-ssp370-2-1-f_gn_2015-2100.nc luc_ssp370.nc
+ncks -v c3ann_to_secdf,c3nfx_to_secdf,c3per_to_secdf,c4ann_to_secdf,c4per_to_secdf,pastr_to_secdf multiple-transitions_input4MIPs_landState_ScenarioMIP_UofMD-IMAGE-ssp126-2-1-f_gn_2015-2100.nc luc_ssp126.nc
+
+ncap2 -A -s "landuse=c3ann+c3nfx+c3per+c4ann+c4per+pastr" landuse_ssp126.nc landuse_ssp126.nc
+ncap2 -A -s "landuse=c3ann+c3nfx+c3per+c4ann+c4per+pastr" landuse_ssp370.nc landuse_ssp370.nc
+
+ncap2 -A -s "refor=c3ann_to_secdf+c3nfx_to_secdf+c3per_to_secdf+c4ann_to_secdf+c4per_to_secdf+pastr_to_secdf" luc_ssp370.nc luc_ssp370.nc
+ncks -v refor refor_luc_ssp370.nc refor_luc_ssp370.nc
+ncap2 -A -s "refor=c3ann_to_secdf+c3nfx_to_secdf+c3per_to_secdf+c4ann_to_secdf+c4per_to_secdf+pastr_to_secdf" luc_ssp126.nc luc_ssp126.nc
+ncks -v refor luc_ssp126.nc refor_luc_ssp126.nc
+
+cdo timcumsum refor_luc_ssp370.nc cumsum_refor_luc_ssp370.nc 
+cdo timcumsum refor_luc_ssp126.nc cumsum_refor_luc_ssp126.nc 
+
+cdo timcumsum /home/ucfaako/Documents/misc_data/LUHv2/added_tree_cover_input4MIPs_landState_ScenarioMIP_UofMD-AIM-ssp370-2-1-f_gn_2015-2100.nc cumsum_added_tree_cover_ssp370.nc  
+cdo timcumsum /home/ucfaako/Documents/misc_data/LUHv2/added_tree_cover_input4MIPs_landState_ScenarioMIP_UofMD-IMAGE-ssp126-2-1-f_gn_2015-2100.nc cumsum_added_tree_cover_ssp126.nc 
+
